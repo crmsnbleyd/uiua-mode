@@ -11,11 +11,9 @@
 ;; and editing the uiua array language
 
 ;;; Code:
-(message "Nothing yet")
-
 (defcustom uiua-command
   (cond ((executable-find "uiua") "uiua")
-	(t "python3"))
+	(t "uiua"))
   "Default command to use Uiua."
   :version "27.1"
   :type 'string)
