@@ -1,0 +1,3 @@
+This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language
+
+Much like the language itself, this mode is currently in progress
