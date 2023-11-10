@@ -11,14 +11,33 @@
 ;; and editing the uiua array language
 
 ;;; Code:
+(defgroup uiua-mode nil
+  "Major mode for editing the Uiua array language"
+  :prefix "uiua-"
+  :group 'languages)
+
 (defcustom uiua-command
   (cond ((executable-find "uiua") "uiua")
 	(t "/usr/bin/uiua"))
   "Default command to use Uiua."
+  :group 'uiua-mode
   :version "27.1"
   :type 'string)
 
-;; credits to https://github.com/haskell/haskell-mode
+(defun uiua-mode--generate-keyword-regex (prefix other-letters)
+  "Given a string PREFIX and OTHER-LETTERS, generates a
+regex string that matches all words starting with PREFIX
+and the rest of the word being any initial sublist of OTHER-LETTERS.
+
+For example when called with \"LEN\" and \"GTH\", the generated
+regex shall match (LEN LENG LENGT LENGTH)."
+  (let ((suffix-length (length other-letters))
+	(reversed-letters (reverse other-letters))
+	(res (list)))
+    (dotimes (_ suffix-length) (setf res (cons "?)" res)))
+    (seq-do (lambda (ch) (setf res (cons (format "(%c" ch) res))) reversed-letters)
+    (apply 'concat prefix res)))
+
 (defun uiua-mode--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
 Use buffer as input and replace the whole buffer with the
