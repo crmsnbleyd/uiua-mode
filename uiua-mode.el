@@ -13,7 +13,7 @@
 ;;; Code:
 (defcustom uiua-command
   (cond ((executable-find "uiua") "uiua")
-	(t "uiua"))
+	(t "/usr/bin/uiua"))
   "Default command to use Uiua."
   :version "27.1"
   :type 'string)
@@ -29,10 +29,18 @@ output.  If CMD fails the buffer remains unchanged."
 	 (coding-system-for-read 'utf-8)
 	 (coding-system-for-write 'utf-8))
     (unwind-protect
+	(let ((curr-file (buffer-file-name))
+	      (curr-bufname (buffer-name))
+	      (message-log-max nil))
+	  (set-visited-file-name out-file)
+	  (with-temp-message "" (save-buffer))
+	  (set-visited-file-name curr-file)
+	  (rename-buffer curr-bufname))
 	(let* ((_errcode
-		(apply 'call-process-region (point-min) (point-max) cmd nil
-		       `((:file ,out-file) ,err-file)
-		       nil args))
+		(apply 'call-process cmd nil
+		       `(,(get-buffer-create "*uiua-output*") ,err-file)
+		       nil
+		       (append args (list out-file))))
 	       (err-file-empty-p
 		(equal 0 (nth 7 (file-attributes err-file))))
 	       (out-file-empty-p
@@ -68,7 +76,7 @@ output.  If CMD fails the buffer remains unchanged."
     (error "Uiua binary not found, please set `uiua-command'"))
   (when (interactive-p) (message "Autoformatting code with %s fmt."
 				 uiua-command))
-  (uiua-mode--buffer-apply-command uiua-command "fmt"))
+  (uiua-mode--buffer-apply-command uiua-command (list "fmt")))
 
 (defun uiua-mode--replace-region (beg end replacement)
   "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
