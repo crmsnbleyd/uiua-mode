@@ -39,8 +39,13 @@
   "Face used for Uiua in-built dyadic functions."
   :group 'uiua)
 
+(defface uiua-ocean-function
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for Uiua ocean functions."
+  :group 'uiua)
+
 (defface uiua-monadic-modifier
-  '((t (:inherit font-lock-function-name-face)))
+  '((t (:inherit font-lock-variable-name-face)))
   "Face used for Uiua in-built monadic modifiers."
   :group 'uiua)
 
@@ -49,23 +54,36 @@
   "Face used for Uiua in-built dyadic modifiers."
   :group 'uiua)
 
+(defconst uiua--monadic-function-glyphs
+  (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
+	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
+	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
+
+(defconst uiua--dyadic-function-glyphs
+  (list ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?- ?×
+	?÷ ?◿ ?ⁿ ?ₙ ?↧ ?↥ ?∠ ?ℂ
+	?≍ ?⊟ ?⊂ ?⊏ ?⊡ ?↯ ?↙ ?↘
+	?↻ ?◫ ?▽ ?⌕ ?∊ ?⊗ ?⍤))
+
+(defconst uiua--ocean-function-glyphs
+  (list ?⋄ ?~ ?≊ ?≃ ?∸))
+
+(defconst uiua--monadic-modifier-glyphs
+  (list ?/ ?\\ ?∵ ?≡ ?∺ ?≐ ?⊞ ?⊠ ?⍥
+	?⊕ ?⊜ ?⊐ ?⍘ ?⋅ ?⟜ ?⊙ ?∩))
+
+(defconst uiua--dyadic-modifier-glyphs
+  (list ?⊃ ?⊓ ?⍜ ?⍢ ?⬚ ?≑ ?∧ ?◳ ?? ?⍣))
+
 (defconst uiua--primitives
   (list
-   ?. ?, ?: ?\; ?∘
-   ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
-   ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?- ?×
-   ?÷ ?◿ ?ⁿ ?ₙ ?↧ ?↥ ?∠ ?ℂ
-   ?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
-   ?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔ ?≍
-   ?⊟ ?⊂ ?⊏ ?⊡ ?↯ ?↙ ?↘
-   ?↻ ?◫ ?▽ ?⌕ ?∊ ?⊗
-   ?/ ?\\ ?∵ ?≡ ?∺ ?≐ ?⊞ ?⊠ ?⍥
-   ?⊕ ?⊜ ?⊐ ?⍘ ?⋅ ?⟜ ?⊙ ?∩
-   ?⊃ ?⊓ ?⍜ ?⍢ ?⬚ ?≑ ?∧ ?◳
-   ?⋄ ?~ ?≊ ?≃ ?∸
-   ?? ?⍣ ?⍤
-   ?⚂ ?η ?π ?τ ?∞
-   ?⸮))
+   (list ?. ?, ?: ?\; ?∘ ?⸮)
+   uiua--monadic-function-glyphs
+   uiua--dyadic-function-glyphs
+   uiua--ocean-function-glyphs
+   uiua--monadic-modifier-glyphs
+   uiua--dyadic-modifier-glyphs
+   (list ?⚂ ?η ?π ?τ ?∞)))
 
 ;;TODO @a and $ as string font-lock
 (defvar uiua--syntax-table
@@ -73,7 +91,8 @@
     ;; add all primitives as punctuation
     ;; so that they are parsed separately
     (dolist (i uiua--primitives)
-      (modify-syntax-entry i "." table))
+      (dolist (j i)
+      (modify-syntax-entry j "." table)))
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?@ "_" table))
   "Syntax table for `uiua-mode'.")
