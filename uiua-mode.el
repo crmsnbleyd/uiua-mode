@@ -24,19 +24,31 @@
   :version "27.1"
   :type 'string)
 
+(defconst uiua--primitives
+  (list
+   ?¬ ?± ?¯
+   ?⌵ ?√ ?○
+   ?⌊ ?⌈ ?\⁅
+   ?= ?≠ ?<
+   ?≤ ?> ?≥
+   ?+ ?- ?×
+   ?÷ ?◿ ?ⁿ
+   ?ₙ ?↧ ?↥
+   ?∠ ?ℂ ?⇡
+   ?⊢ ?⇌ ?♭
+   ?⋯ ?⍉ ?⍏
+   ?⍖ ?⊚ ?⊛
+   ?⊝ ?□
+    ))
+
 (defvar uiua--syntax-table
   (let ((table (make-syntax-table)))
-    (modify-syntax-entry ?# "<" table)
-    ;; add all symbols as punctuation
-    (dolist (i (list ?÷ ?¬ ?±
-		     ?√ ?⌊ ?⌈
-		     ?=
-		))
+    ;; add all primitives as punctuation
+    ;; so that they are parsed separately
+    (dolist (i uiua--primitives)
       (modify-syntax-entry i "." table))
-    (modify-syntax-entry ?{ "(}" table)
-    (modify-syntax-entry ?} "){" table)
-    (modify-syntax-entry ?` "_" table)
-    (modify-syntax-entry ?' "_" table))
+    (modify-syntax-entry ?# "<" table)
+    (modify-syntax-entry ?@ "_" table))
   "Syntax table for `uiua-mode'.")
 
 (defun uiua--generate-keyword-regex (prefix other-letters)
