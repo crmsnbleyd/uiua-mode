@@ -1,5 +1,5 @@
 ;;; uiua-mode.el --- Uiua integration for Emacs -*- lexical-binding:t -*-
-;;; Version: 0.0.1
+;;; Version: 0.0.5
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
@@ -194,6 +194,7 @@ output.  If CMD fails the buffer remains unchanged."
       (ignore-errors
 	(delete-file out-file)))))
 
+;;TODO preserve zoom
 (defun uiua-format-buffer ()
   "Format buffer using the in-built formatter"
   (interactive)
