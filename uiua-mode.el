@@ -28,6 +28,10 @@
 ;; gap dip reach identity are usually chained together
 ;; so [gdri]{2,} is automatically parsed as
 ;; their equivalent unicode primitives
+(defface uiua-number
+  '((t (:inherit font-lock-type-face)))
+  "Face used for numbers in Uiua."
+  :group 'uiua)
 
 (defface uiua-monadic-function
   '((t (:inherit font-lock-keyword-face)))
@@ -59,8 +63,13 @@
 	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
 	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
+;; note: here, - should come first
+;; because we create a regex from this list
+;; and if it comes in between, we have a range
+;; in character class, e.g [a-z]
+;; while [-az] matches only `-' `a' `z'
 (defconst uiua--dyadic-function-glyphs
-  (list ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?- ?×
+  (list ?- ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?×
 	?÷ ?◿ ?ⁿ ?ₙ ?↧ ?↥ ?∠ ?ℂ
 	?≍ ?⊟ ?⊂ ?⊏ ?⊡ ?↯ ?↙ ?↘
 	?↻ ?◫ ?▽ ?⌕ ?∊ ?⊗ ?⍤))
@@ -85,7 +94,23 @@
    uiua--dyadic-modifier-glyphs
    (list ?⚂ ?η ?π ?τ ?∞)))
 
-;;TODO @a and $ as string font-lock
+(defvar uiua--font-lock-defaults
+  `((("[$]\\|@\\(\\\\\\\\\\|[^\\]\\)" . font-lock-string-face)
+     ("[A-Z][a-zA-Z]*" . 'default)
+     ("[`¯]?[0-9]+\\(\\.[0-9]+\\)?" . 'uiua-number)
+     (,(concat
+	"[" uiua--ocean-function-glyphs "]\\|"
+	(uiua--generate-keyword-regex "ro" "ck") "\\|" "surface"
+	(uiua--generate-keyword-regex "de" "ep") "\\|"
+	(uiua--generate-keyword-regex "ab" "byss") "\\|"
+	(uiua--generate-keyword-regex "se" "abed"))
+      . 'uiua-ocean-function)
+     (,(concat "[" uiua--monadic-function-glyphs "]") . 'uiua-monadic-function)
+     (,(concat "[" uiua--monadic-modifier-glyphs "]") . 'uiua-monadic-modifier)
+     (,(concat "[" uiua--dyadic-function-glyphs "]") . 'uiua-dyadic-function)
+     (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
+    nil nil nil))
+
 (defvar uiua--syntax-table
   (let ((table (make-syntax-table)))
     ;; add all primitives as punctuation
@@ -94,7 +119,9 @@
       (dolist (j i)
       (modify-syntax-entry j "." table)))
     (modify-syntax-entry ?# "<" table)
-    (modify-syntax-entry ?@ "_" table))
+    (modify-syntax-entry ?@ "_" table)
+    (modify-syntax-entry ?` "_ " table)
+    table)
   "Syntax table for `uiua-mode'.")
 
 (defun uiua--generate-keyword-regex (prefix other-letters)
@@ -106,12 +133,12 @@ For example when called with \"LEN\" and \"GTH\", the generated
 regex shall match (LEN LENG LENGT LENGTH)."
   (let ((suffix-length (length other-letters))
 	(res (list)))
-    (dotimes (_ suffix-length) (setf res (cons ")?" res)))
+    (dotimes (_ suffix-length) (setf res (cons "\\)?" res)))
     ;; loop across characters from OTHER-LETTERS in reverse
     (while (> suffix-length 0)
       (setf res
 	    (cons
-	     (format "(%c"
+	     (format "\\(%c"
 		     (aref other-letters
 			   (cl-decf suffix-length)))
 	     res)))
@@ -182,6 +209,13 @@ output.  If CMD fails the buffer remains unchanged."
       (goto-char (point-min))
       (insert replacement)
       (delete-region beg end)))
+
+;;;###autoload
+(define-derived-mode uiua-mode prog-mode "Uiua"
+  "Major mode for editing Uiua files."
+  :syntax-table uiua--syntax-table
+  :group 'uiua
+  (setq-local font-lock-defaults uiua--font-lock-defaults))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ua\\'" . uiua-mode))
