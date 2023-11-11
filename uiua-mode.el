@@ -11,8 +11,8 @@
 ;; and editing the uiua array language
 
 ;;; Code:
-(defgroup uiua-mode nil
-  "Major mode for editing the Uiua array language"
+(defgroup uiua nil
+  "Major mode for editing the Uiua array language."
   :prefix "uiua-"
   :group 'languages)
 
@@ -24,7 +24,22 @@
   :version "27.1"
   :type 'string)
 
-(defun uiua-mode--generate-keyword-regex (prefix other-letters)
+(defvar uiua--syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?# "<" table)
+    ;; add all symbols as punctuation
+    (dolist (i (list ?÷ ?¬ ?±
+		     ?√ ?⌊ ?⌈
+		     ?=
+		))
+      (modify-syntax-entry i "." table))
+    (modify-syntax-entry ?{ "(}" table)
+    (modify-syntax-entry ?} "){" table)
+    (modify-syntax-entry ?` "_" table)
+    (modify-syntax-entry ?' "_" table))
+  "Syntax table for `uiua-mode'.")
+
+(defun uiua--generate-keyword-regex (prefix other-letters)
   "Given a string PREFIX and OTHER-LETTERS, generates a
 regex string that matches all words starting with PREFIX
 and the rest of the word being any initial sublist of OTHER-LETTERS.
@@ -44,7 +59,7 @@ regex shall match (LEN LENG LENGT LENGTH)."
 	     res)))
     (apply 'concat prefix res)))
 
-(defun uiua-mode--buffer-apply-command (cmd &optional args)
+(defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
 Use buffer as input and replace the whole buffer with the
 output.  If CMD fails the buffer remains unchanged."
@@ -94,7 +109,7 @@ output.  If CMD fails the buffer remains unchanged."
       (ignore-errors
 	(delete-file out-file)))))
 
-(defun uiua-mode-format-buffer ()
+(defun uiua-format-buffer ()
   "Format buffer using the in-built formatter"
   (interactive)
   (unless uiua-command
@@ -103,7 +118,7 @@ output.  If CMD fails the buffer remains unchanged."
 				 uiua-command))
   (uiua-mode--buffer-apply-command uiua-command (list "fmt")))
 
-(defun uiua-mode--replace-region (beg end replacement)
+(defun uiua--replace-region (beg end replacement)
   "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
     (save-excursion
       (goto-char (point-min))
