@@ -24,6 +24,31 @@
   :version "27.1"
   :type 'string)
 
+;;TODO Planet notation shortcut for highlighting
+;; gap dip reach identity are usually chained together
+;; so [gdri]{2,} is automatically parsed as
+;; their equivalent unicode primitives
+
+(defface uiua-monadic-function
+  '((t (:inherit font-lock-keyword-face)))
+  "Face used for Uiua in-built monadic functions."
+  :group 'uiua)
+
+(defface uiua-dyadic-function
+  '((t (:inherit font-lock-builtin-face)))
+  "Face used for Uiua in-built dyadic functions."
+  :group 'uiua)
+
+(defface uiua-monadic-modifier
+  '((t (:inherit font-lock-function-name-face)))
+  "Face used for Uiua in-built monadic modifiers."
+  :group 'uiua)
+
+(defface uiua-dyadic-modifier
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for Uiua in-built dyadic modifiers."
+  :group 'uiua)
+
 (defconst uiua--primitives
   (list
    ?¬ ?± ?¯
@@ -38,7 +63,7 @@
    ?⊢ ?⇌ ?♭
    ?⋯ ?⍉ ?⍏
    ?⍖ ?⊚ ?⊛
-   ?⊝ ?□
+   ?⊝ ?□ ?⊔
     ))
 
 (defvar uiua--syntax-table
