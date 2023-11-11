@@ -32,10 +32,16 @@ and the rest of the word being any initial sublist of OTHER-LETTERS.
 For example when called with \"LEN\" and \"GTH\", the generated
 regex shall match (LEN LENG LENGT LENGTH)."
   (let ((suffix-length (length other-letters))
-	(reversed-letters (reverse other-letters))
 	(res (list)))
-    (dotimes (_ suffix-length) (setf res (cons "?)" res)))
-    (seq-do (lambda (ch) (setf res (cons (format "(%c" ch) res))) reversed-letters)
+    (dotimes (_ suffix-length) (setf res (cons ")?" res)))
+    ;; loop across characters from OTHER-LETTERS in reverse
+    (while (> suffix-length 0)
+      (setf res
+	    (cons
+	     (format "(%c"
+		     (aref other-letters
+			   (cl-decf suffix-length)))
+	     res)))
     (apply 'concat prefix res)))
 
 (defun uiua-mode--buffer-apply-command (cmd &optional args)
