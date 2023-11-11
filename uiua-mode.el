@@ -110,6 +110,9 @@ output.  If CMD fails the buffer remains unchanged."
       (insert replacement)
       (delete-region beg end)))
 
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.ua\\'" . uiua-mode))
+
 (provide 'uiua-mode)
 
 ;;; uiua-mode.el ends here
