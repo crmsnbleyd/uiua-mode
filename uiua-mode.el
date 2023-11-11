@@ -98,14 +98,24 @@
   `((("[$]\\|@\\(\\\\\\\\\\|[^\\]\\)" . font-lock-string-face)
      ("[A-Z][a-zA-Z]*" . 'default)
      ("[`¯]?[0-9]+\\(\\.[0-9]+\\)?" . 'uiua-number)
-     (,(concat
-	"[" uiua--ocean-function-glyphs "]\\|"
-	(uiua--generate-keyword-regex "ro" "ck") "\\|" "surface"
-	(uiua--generate-keyword-regex "de" "ep") "\\|"
-	(uiua--generate-keyword-regex "ab" "byss") "\\|"
-	(uiua--generate-keyword-regex "se" "abed"))
+     (,(uiua--generate-font-lock-matcher
+	uiua--monadic-function-glyphs
+	'("not" . "")
+	'("sig" . "n")
+	'("`" . "")
+	'("abs" . "olute")
+	'("sqr" . "t"))
+      . 'uiua-monadic-function)
+     ;; absolute needs to be before abbyss
+     ;; otherwise `abs' never gets highlighted
+     (,(uiua--generate-font-lock-matcher
+	uiua--ocean-glyphs
+	'("ab" . "yss")
+	'("de" . "ep")
+	'("ro" . "ck")
+	'("se" . "abed")
+	'("surface" . ""))
       . 'uiua-ocean-function)
-     (,(concat "[" uiua--monadic-function-glyphs "]") . 'uiua-monadic-function)
      (,(concat "[" uiua--monadic-modifier-glyphs "]") . 'uiua-monadic-modifier)
      (,(concat "[" uiua--dyadic-function-glyphs "]") . 'uiua-dyadic-function)
      (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
@@ -143,6 +153,20 @@ regex shall match (LEN LENG LENGT LENGTH)."
 			   (cl-decf suffix-length)))
 	     res)))
     (apply 'concat prefix res)))
+
+;; TODO generate regexes like before
+(defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
+  (string-remove-suffix
+   "\\|"
+   (apply 'concat "[" glyphs "]\\|"
+	  (map 'list
+	       (lambda (pair)
+		 (concat
+		  (uiua--generate-keyword-regex
+		   (car pair) (cdr pair))
+		  "\\|"))
+	       word-prefix-suffix-pairs))))
+
 
 (defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
