@@ -234,7 +234,7 @@ output.  If CMD fails the buffer remains unchanged."
   (interactive)
   (unless uiua-command
     (error "Uiua binary not found, please set `uiua-command'"))
-  (when (interactive-p) (message "Autoformatting code with %s fmt."
+  (when (called-interactively-p "interactive") (message "Autoformatting code with %s fmt."
 				 uiua-command))
   (uiua-mode--buffer-apply-command uiua-command (list "fmt")))
 
