@@ -122,9 +122,9 @@ If ARG is not nil, prompts user for input and output names."
      ("[`¯]?[0-9]+\\(\\.[0-9]+\\)?" . 'uiua-number)
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-function-glyphs
-	'("not" . "")
+	"not"
+	"`"
 	'("sig" . "n")
-	'("`" . "")
 	'("abs" . "olute")
 	'("sqr" . "t"))
       . 'uiua-monadic-function)
@@ -136,7 +136,7 @@ If ARG is not nil, prompts user for input and output names."
 	'("de" . "ep")
 	'("ro" . "ck")
 	'("se" . "abed")
-	'("surface" . ""))
+	"surface")
       . 'uiua-ocean-function)
      (,(concat "[" uiua--monadic-modifier-glyphs "]") . 'uiua-monadic-modifier)
      (,(concat "[" uiua--dyadic-function-glyphs "]") . 'uiua-dyadic-function)
@@ -179,16 +179,20 @@ regex shall match (LEN LENG LENGT LENGTH)."
 
 (defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
   "Create a regex that matches any character in GLYPHS.
-In addition, it matches words given in WORD-PREFIX-SUFFIX-PAIRS such that
-it matches any concatenation of the PREFIX and initial substring of SUFFIX."
+In addition, it matches words specified by the rest of args such that
+if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
+it matches any concatenation of the PREFIX and initial substring of SUFFIX,
+and if it is a string, that literal string is matched."
   (string-remove-suffix
    "\\|"
    (apply 'concat "[" glyphs "]\\|"
 	  (map 'list
-	       (lambda (pair)
+	       (lambda (pair-or-string)
 		 (concat
+		  (if (consp pair-or-string)
 		  (uiua--generate-keyword-regex
-		   (car pair) (cdr pair))
+		   (car pair-or-string) (cdr pair-or-string))
+		  pair-or-string)
 		  "\\|"))
 	       word-prefix-suffix-pairs))))
 
