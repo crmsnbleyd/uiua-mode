@@ -64,20 +64,21 @@
 	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
 (defun uiua-standalone-compile (arg)
+  "Compile standalone executable with uiua stand.
+If ARG is not nil, prompts user for input and output names."
   (interactive "P")
   (save-buffer)
   (let* ((input-file-name (buffer-file-name))
 	(executable-name (file-name-sans-extension input-file-name)))
-  (cond
-   ((null arg)
-    ;; go with defaults
-    (message "No arguments were passed, output is %s" executable-name))
-   ((or (listp arg) (string= arg "-"))
-    ;; prompt for name, blank to leave unchanged
-    (message "this is just a prefix arg"))
-   ;; maybe raw string input for executable name
-   )
-  (compile (format "uiua stand --name %s %s" executable-name input-file-name))))
+  (unless
+   (null arg)
+   (setf input-file-name
+	 (read-string (format "File to compile (default %s): " input-file-name)
+		      nil nil input-file-name))
+   (setf executable-name
+	 (read-string (format "Output name (default %s): " executable-name)
+		      nil nil executable-name)))
+  (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))))
 
 ;; note: here, - should come first
 ;; because we create a regex from this list
