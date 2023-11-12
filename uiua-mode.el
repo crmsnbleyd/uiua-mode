@@ -63,6 +63,22 @@
 	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
 	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
+(defun uiua-standalone-compile (arg)
+  (interactive "P")
+  (save-buffer)
+  (let* ((input-file-name (buffer-file-name))
+	(executable-name (file-name-sans-extension input-file-name)))
+  (cond
+   ((null arg)
+    ;; go with defaults
+    (message "No arguments were passed, output is %s" executable-name))
+   ((or (listp arg) (string= arg "-"))
+    ;; prompt for name, blank to leave unchanged
+    (message "this is just a prefix arg"))
+   ;; maybe raw string input for executable name
+   )
+  (compile (format "uiua stand --name %s %s" executable-name input-file-name))))
+
 ;; note: here, - should come first
 ;; because we create a regex from this list
 ;; and if it comes in between, we have a range
