@@ -7,7 +7,7 @@
 ;; Keywords: languages, uiua
 
 ;;; Commentary:
-;; `uiua-mode' is an emacs major mode for interacting with
+;; `uiua-mode' is an Emacs major mode for interacting with
 ;; and editing the uiua array language
 
 ;;; Code:
@@ -15,6 +15,10 @@
   "Major mode for editing the Uiua array language."
   :prefix "uiua-"
   :group 'languages)
+
+(defcustom uiua-mode-hook nil
+  "The hook that is called after loading `uiua-mode'."
+  :type 'hook)
 
 (defcustom uiua-command
   (cond ((executable-find "uiua") "uiua")
@@ -135,7 +139,8 @@
   "Syntax table for `uiua-mode'.")
 
 (defun uiua--generate-keyword-regex (prefix other-letters)
-  "Given a string PREFIX and OTHER-LETTERS, generates a
+  "Generate a valid regex string.
+When given a string PREFIX and OTHER-LETTERS, generates a
 regex string that matches all words starting with PREFIX
 and the rest of the word being any initial sublist of OTHER-LETTERS.
 
@@ -154,8 +159,10 @@ regex shall match (LEN LENG LENGT LENGTH)."
 	     res)))
     (apply 'concat prefix res)))
 
-;; TODO generate regexes like before
 (defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
+  "Create a regex that matches any character in GLYPHS.
+In addition, it matches words given in WORD-PREFIX-SUFFIX-PAIRS such that
+it matches any concatenation of the PREFIX and initial substring of SUFFIX."
   (string-remove-suffix
    "\\|"
    (apply 'concat "[" glyphs "]\\|"
@@ -166,7 +173,6 @@ regex shall match (LEN LENG LENGT LENGTH)."
 		   (car pair) (cdr pair))
 		  "\\|"))
 	       word-prefix-suffix-pairs))))
-
 
 (defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
@@ -218,9 +224,13 @@ output.  If CMD fails the buffer remains unchanged."
       (ignore-errors
 	(delete-file out-file)))))
 
+(defun uiua-process-load-file ()
+  "Load the file currently open in buffer."
+  (interactive))
+
 ;;TODO preserve zoom
 (defun uiua-format-buffer ()
-  "Format buffer using the in-built formatter"
+  "Format buffer using the in-built formatter."
   (interactive)
   (unless uiua-command
     (error "Uiua binary not found, please set `uiua-command'"))
