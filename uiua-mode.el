@@ -112,7 +112,8 @@ If ARG is not nil, prompts user for input and output names."
    (list ?⚂ ?η ?π ?τ ?∞)))
 
 (defvar uiua--font-lock-defaults
-  `((("[$]\\|@\\(\\\\\\\\\\|[^\\]\\)" . font-lock-string-face)
+  `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
+      . font-lock-string-face)
      ("[A-Z][a-zA-Z]*" . 'default)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
@@ -156,6 +157,7 @@ If ARG is not nil, prompts user for input and output names."
     table)
   "Syntax table for `uiua-mode'.")
 
+;; Possible enhancement: macro to generate an `rx' form
 (defun uiua--generate-keyword-regex (prefix other-letters)
   "Generate a valid regex string.
 When given a string PREFIX and OTHER-LETTERS, generates a
