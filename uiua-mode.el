@@ -28,10 +28,6 @@
   :version "27.1"
   :type 'string)
 
-;;TODO Planet notation shortcut for highlighting
-;; gap dip reach identity are usually chained together
-;; so [gdri]{2,} is automatically parsed as
-;; their equivalent unicode primitives
 (defface uiua-number
   '((t (:inherit font-lock-type-face)))
   "Face used for numbers in Uiua."
@@ -101,6 +97,11 @@
 (defvar uiua--font-lock-defaults
   `((("[$]\\|@\\(\\\\\\\\\\|[^\\]\\)" . font-lock-string-face)
      ("[A-Z][a-zA-Z]*" . 'default)
+     ;; next three regices are shortcuts to match
+     ;; [gdri]{2,} as planet notation
+     ("i\\([gdr]\\)" 1 'uiua-monadic-modifier )
+     ("\\([gdr]\\)i" 1 'uiua-monadic-modifier )
+     ("[gdr][gdr]?" . 'uiua-monadic-modifier )
      ("[`¯]?[0-9]+\\(\\.[0-9]+\\)?" . 'uiua-number)
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-function-glyphs
