@@ -123,9 +123,11 @@ If ARG is nil, prompts user for input and output names."
      (,(rx (seq upper (* alpha))) . 'default)
      ;; so that 'greater', meaning '≥' does
      ;; not collide with 'gr', meaning '⋅⟜'
-     (,(uiua--generate-keyword-regex "gre" "ater") . 'uiua-dyadic-function)
+     (,(uiua--generate-font-lock-matcher nil '("gre" . "ater"))
+      . 'uiua-dyadic-function)
      ;; overrides for 'dip' and 'indexof'
-     (,(rx (or "dip" (seq "ind" (? "e" (? "x" (? "o" (? "f")))))))
+     (,(uiua--generate-font-lock-matcher nil
+	"dip" '("ind" . "exof"))
       . 'uiua-monadic-modifier)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
@@ -209,10 +211,11 @@ regex shall match (LEN LENG LENGT LENGTH)."
 In addition, it matches words specified by WORD-PREFIX-SUFFIX-PAIRS such that
 if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
 it matches any concatenation of the PREFIX and initial substring of SUFFIX,
-and if it is a string, that literal string is matched."
+and if it is a string, that literal string is matched.
+If GLYPHS is nil, only the latter behaviour is displayed."
   (string-remove-suffix
    "\\|"
-   (apply 'concat "[" glyphs "]\\|"
+   (let ((pair-matching-regex
 	  (mapcar
 	   (lambda (pair-or-string)
 	     (concat
@@ -221,7 +224,10 @@ and if it is a string, that literal string is matched."
 		   (car pair-or-string) (cdr pair-or-string))
 		pair-or-string)
 	      "\\|"))
-	       word-prefix-suffix-pairs))))
+	   word-prefix-suffix-pairs)))
+     (if glyphs
+	 (apply 'concat "[" glyphs "]\\|" pair-matching-regex)
+         (apply 'concat pair-matching-regex)))))
 
 (defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
