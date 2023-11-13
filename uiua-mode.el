@@ -126,23 +126,6 @@ If ARG is nil, prompts user for input and output names."
   `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
       . font-lock-string-face)
      (,(rx (seq upper (* alpha))) . 'default)
-     ;; so that 'greater', meaning '≥' does
-     ;; not collide with 'gr', meaning '⋅⟜'
-     (,(uiua--generate-font-lock-matcher nil '("gre" . "ater"))
-      . 'uiua-dyadic-function)
-     (,(uiua--generate-font-lock-matcher
-	nil '("ris" . "e")) ;; conflict with `ri': reach identity
-      . 'uiua-monadic-function)
-     (,(uiua--generate-font-lock-matcher
-	nil
-	"dip" '("div" . "ide")
-	'("sel" . "ect") ;; conflict with seabed
-	'("pic" . "k") ;; conflict with pi
-	'("res" . "hape") ;; conflict with reach
-	'("dro" . "p") ;; conflict with 'dr': dip reach
-	'("rot" . "ate") ;; conflict with rock
-	'("ind" . "exof"))
-      . 'uiua-monadic-modifier)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
      ("i?\\([gdr][gdr]+\\)i?" 1 'uiua-monadic-modifier )
@@ -158,24 +141,25 @@ If ARG is nil, prompts user for input and output names."
 	uiua--monadic-function-glyphs
 	"not"
 	"`"
-	'("sig" . "n")
+	"&ims" ;; conflict with &i
 	'("abs" . "olute"); conflict with abbyss
-	'("sqr" . "t")
-	'("sin" . "e")
-	'("flo" . "or")
-	'("cei" . "ling")
-	'("rou" . "nd") ; conflict with rock
-	'("len" . "gth")
-	'("sha" . "pe")
-	'("rang" . "e")
-	'("fir" . "st")
-	'("rev" . "erse"); conflict with reach
-	'("des" . "hape"); conflict with deep
 	'("bit" . "s")
-	'("tran" . "spose")
+	'("cei" . "ling")
+	'("des" . "hape"); conflict with deep
 	'("fal" . "l")
-	)
-      . 'uiua-monadic-function)
+	'("fir" . "st")
+	'("flo" . "or")
+	'("len" . "gth")
+	'("rang" . "e")
+	'("rev" . "erse"); conflict with reach
+	'("ris" . "e") ;; conflict with `ri': reach identity
+	'("rou" . "nd") ; conflict with rock
+	'("sha" . "pe")
+	'("sig" . "n")
+	'("sin" . "e")
+	'("sqr" . "t")
+	'("tran" . "spose"))
+      0 'uiua-monadic-function t)
      (,(uiua--generate-font-lock-matcher
 	uiua--ocean-function-glyphs
 	'("ab" . "yss")
@@ -189,30 +173,47 @@ If ARG is nil, prompts user for input and output names."
 	"equals"
 	"add"
 	"subtract"
+	"deal"
+	"send"
+	"&fwa"
+	"&im[de]"
+	"&tcps[rw]t"
 	"!="
 	"*"
 	"%"
-	'("les" . "s")
-	'("mul" . "tiply")
-	'("mod" . "ulus")
-	'("pow" . "er")
-	'("log" . "arithm")
-	'("min" . "imum")
-	'("max" . "imum")
 	'("ata" . "ngent")
 	'("comp" . "lex")
-	'("mat" . "ch")
 	'("cou" . "ple")
+	'("fin" . "d")
+	'("gre" . "ater")
 	'("joi" . "n")
+	'("kee" . "p")
+	'("les" . "s")
+	'("log" . "arithm")
+	'("mat" . "ch")
+	'("max" . "imum")
+	'("min" . "imum")
+	'("mod" . "ulus")
+	'("mul" . "tiply")
+	'("pow" . "er")
+	'("rege" . "x")
 	'("tak" . "e")
 	'("win" . "dows")
-	'("kee" . "p")
-	'("fin" . "d")
 	'("mem" . "ber"))
-      . 'uiua-dyadic-function)
+      0 'uiua-dyadic-function t)
      (,(uiua--generate-font-lock-matcher
-	uiua--monadic-modifier-glyphs)
-      . 'uiua-monadic-modifier)
+	uiua--monadic-modifier-glyphs
+	"dip"
+	'("div" . "ide")
+	'("pic" . "k")    ;; conflict with pi
+	'("res" . "hape") ;; conflict with reach
+	'("dro" . "p")	  ;; conflict with 'dr': dip reach
+	'("rot" . "ate")  ;; conflict with rock
+	'("sel" . "ect")  ;; conflict with seabed
+	'("ind" . "exof"))
+      0 'uiua-monadic-modifier t)
+     ("\\(^\\|[^&a-zA-Z]\\)\\(pi\\|i\\|e\\)\\([^&a-zA-Z]\\|$\\)"
+      2 'uiua-noadic-or-constant)
      (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
     nil nil nil))
 
