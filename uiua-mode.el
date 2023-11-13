@@ -18,7 +18,8 @@
 
 (defcustom uiua-mode-hook nil
   "The hook that is called after loading `uiua-mode'."
-  :type 'hook)
+  :type 'hook
+  :group 'uiua)
 
 (defcustom uiua-command
   (cond ((executable-find "uiua") "uiua")
@@ -262,15 +263,17 @@ output.  If CMD fails the buffer remains unchanged."
   "Load the file currently open in buffer."
   (interactive))
 
-;;TODO preserve zoom
 (defun uiua-format-buffer ()
   "Format buffer using the in-built formatter."
   (interactive)
-  (unless uiua-command
-    (error "Uiua binary not found, please set `uiua-command'"))
-  (when (called-interactively-p "interactive") (message "Autoformatting code with %s fmt."
-				 uiua-command))
-  (uiua--buffer-apply-command uiua-command (list "fmt")))
+  (let ((original-text-scale text-scale-mode-amount))
+    (when (called-interactively-p "interactive")
+      (unless uiua-command
+	(error "Uiua binary not found, please set `uiua-command'"))
+      (message "Autoformatting code with %s fmt."
+	       uiua-command))
+    (uiua--buffer-apply-command uiua-command (list "fmt"))
+    (when text-scale-mode (text-scale-set original-text-scale))))
 
 (defun uiua--replace-region (beg end replacement)
   "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
