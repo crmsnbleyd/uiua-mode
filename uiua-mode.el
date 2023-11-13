@@ -34,6 +34,11 @@
   "Face used for numbers in Uiua."
   :group 'uiua)
 
+(defface uiua-noadic-or-constant
+  '((t (:inherit font-lock-preprocessor-face)))
+  "Face used for noadic functions and builtin contants."
+  :group 'uiua)
+
 (defface uiua-monadic-function
   '((t (:inherit font-lock-builtin-face)))
   "Face used for Uiua in-built monadic functions."
