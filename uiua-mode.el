@@ -30,12 +30,12 @@
   :type 'string)
 
 (defface uiua-number
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit font-lock-function-name-face)))
   "Face used for numbers in Uiua."
   :group 'uiua)
 
 (defface uiua-monadic-function
-  '((t (:inherit font-lock-keyword-face)))
+  '((t (:inherit font-lock-builtin-face)))
   "Face used for Uiua in-built monadic functions."
   :group 'uiua)
 
@@ -50,7 +50,7 @@
   :group 'uiua)
 
 (defface uiua-monadic-modifier
-  '((t (:inherit font-lock-builtin-face)))
+  '((t (:inherit font-lock-type-face)))
   "Face used for Uiua in-built monadic modifiers."
   :group 'uiua)
 
@@ -176,6 +176,7 @@ If ARG is nil, prompts user for input and output names."
       (dolist (j i)
       (modify-syntax-entry j "." table)))
     (modify-syntax-entry ?# "<" table)
+    (modify-syntax-entry ?\n ">" table)
     (modify-syntax-entry ?@ "_" table)
     (modify-syntax-entry ?` "_ " table)
     table)

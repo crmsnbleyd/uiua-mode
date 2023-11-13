@@ -1,3 +1,8 @@
 This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language
 
 Much like the language itself, this mode is currently in progress
+
+** Screenshots
+Syntax highlighting of various uiua elements, in [[https://github.com/crmsnbleyd/flexoki-emacs-theme][flexoki-theme]].
+#+caption: Showing various glyphs with syntax highlighting
+[[https://github.com/crmsnbleyd/uiua-mode/blob/main/assets/uiua-example.png]]
