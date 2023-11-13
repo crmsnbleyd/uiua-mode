@@ -86,16 +86,14 @@ If ARG is nil, prompts user for input and output names."
   (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))
   (setf uiua--*last-compiled-file* executable-name)))
 
+(defconst uiua--noadic-glyphs
+  (list ?⚂ ?η ?π ?τ ?∞))
+
 (defconst uiua--monadic-function-glyphs
   (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
 	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
 	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
-;; note: here, - should come first
-;; because we create a regex from this list
-;; and if it comes in between, we have a range
-;; in character class, e.g [a-z]
-;; while [-az] matches only `-' `a' `z'
 (defconst uiua--dyadic-function-glyphs
   (list ?- ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?×
 	?÷ ?◿ ?ⁿ ?ₙ ?↧ ?↥ ?∠ ?ℂ
@@ -120,8 +118,10 @@ If ARG is nil, prompts user for input and output names."
    uiua--ocean-function-glyphs
    uiua--monadic-modifier-glyphs
    uiua--dyadic-modifier-glyphs
-   (list ?⚂ ?η ?π ?τ ?∞)))
+   uiua--noadic-glyphs))
 
+;; TODO use matching functions instead of regexes
+;; in order to allow lowercase variables
 (defvar uiua--font-lock-defaults
   `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
       . font-lock-string-face)
@@ -170,21 +170,20 @@ If ARG is nil, prompts user for input and output names."
       . 'uiua-ocean-function)
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-function-glyphs
-	"equals"
-	"add"
-	"subtract"
-	"deal"
-	"send"
-	"&fwa"
-	"&im[de]"
-	"&tcps[rw]t"
-	"!="
-	"*"
-	"%"
+	(regexp-opt
+	 '("equals" "add"
+	   "subtract" "deal"
+	   "send" "&fwa"
+	   "&imd" "&ime"
+	   "&tcpsrt"
+	   "&tcpswt"
+	   "!=" "*"
+	   "%"))
 	'("ata" . "ngent")
 	'("comp" . "lex")
 	'("cou" . "ple")
 	'("fin" . "d")
+	'("ind" . "exof")
 	'("gre" . "ater")
 	'("joi" . "n")
 	'("kee" . "p")
@@ -210,9 +209,14 @@ If ARG is nil, prompts user for input and output names."
 	'("dro" . "p")	  ;; conflict with 'dr': dip reach
 	'("rot" . "ate")  ;; conflict with rock
 	'("sel" . "ect")  ;; conflict with seabed
-	'("ind" . "exof"))
+       )
       0 'uiua-monadic-modifier t)
-     ("\\(^\\|[^&a-zA-Z]\\)\\(pi\\|i\\|e\\)\\([^&a-zA-Z]\\|$\\)"
+     (,(concat
+       "\\(^\\|[^&a-zA-Z]\\)\\("
+       (uiua--generate-font-lock-matcher
+	uiua--noadic-glyphs
+	(regexp-opt '("pi" "i" "e")))
+       "\\)\\([^&a-zA-Z]\\|$\\)")
       2 'uiua-noadic-or-constant)
      (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
     nil nil nil))
@@ -273,7 +277,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 	      "\\|"))
 	   word-prefix-suffix-pairs)))
      (if glyphs
-	 (apply 'concat "[" glyphs "]\\|" pair-matching-regex)
+	 (apply 'concat (regexp-opt-charset glyphs) "\\|" pair-matching-regex)
          (apply 'concat pair-matching-regex)))))
 
 (defun uiua--buffer-apply-command (cmd &optional args)
