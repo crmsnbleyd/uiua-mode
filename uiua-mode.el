@@ -125,9 +125,18 @@ If ARG is nil, prompts user for input and output names."
      ;; not collide with 'gr', meaning '⋅⟜'
      (,(uiua--generate-font-lock-matcher nil '("gre" . "ater"))
       . 'uiua-dyadic-function)
-     ;; overrides for 'dip' and 'indexof'
-     (,(uiua--generate-font-lock-matcher nil
-	"dip" '("ind" . "exof"))
+     (,(uiua--generate-font-lock-matcher
+	nil '("ris" . "e")) ;; conflict with `ri': reach identity
+      . 'uiua-monadic-function)
+     (,(uiua--generate-font-lock-matcher
+	nil
+	"dip" '("div" . "ide")
+	'("sel" . "ect") ;; conflict with seabed
+	'("pic" . "k") ;; conflict with pi
+	'("res" . "hape") ;; conflict with reach
+	'("dro" . "p") ;; conflict with 'dr': dip reach
+	'("rot" . "ate") ;; conflict with rock
+	'("ind" . "exof"))
       . 'uiua-monadic-modifier)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
@@ -145,10 +154,23 @@ If ARG is nil, prompts user for input and output names."
 	"not"
 	"`"
 	'("sig" . "n")
-	'("abs" . "olute")
-	'("sqr" . "t"))
+	'("abs" . "olute"); conflict with abbyss
+	'("sqr" . "t")
+	'("sin" . "e")
+	'("flo" . "or")
+	'("cei" . "ling")
+	'("rou" . "nd") ; conflict with rock
+	'("len" . "gth")
+	'("sha" . "pe")
+	'("rang" . "e")
+	'("fir" . "st")
+	'("rev" . "erse"); conflict with reach
+	'("des" . "hape"); conflict with deep
+	'("bit" . "s")
+	'("tran" . "spose")
+	'("fal" . "l")
+	)
       . 'uiua-monadic-function)
-     ;; 'absolute' needs to be before 'abbyss'
      (,(uiua--generate-font-lock-matcher
 	uiua--ocean-function-glyphs
 	'("ab" . "yss")
@@ -160,9 +182,28 @@ If ARG is nil, prompts user for input and output names."
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-function-glyphs
 	"equals"
+	"add"
+	"subtract"
 	"!="
+	"*"
+	"%"
 	'("les" . "s")
-	'("ind" . "exof"))
+	'("mul" . "tiply")
+	'("mod" . "ulus")
+	'("pow" . "er")
+	'("log" . "arithm")
+	'("min" . "imum")
+	'("max" . "imum")
+	'("ata" . "ngent")
+	'("comp" . "lex")
+	'("mat" . "ch")
+	'("cou" . "ple")
+	'("joi" . "n")
+	'("tak" . "e")
+	'("win" . "dows")
+	'("kee" . "p")
+	'("fin" . "d")
+	'("mem" . "ber"))
       . 'uiua-dyadic-function)
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-modifier-glyphs)
