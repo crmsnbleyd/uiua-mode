@@ -58,11 +58,6 @@
   "Face used for Uiua in-built dyadic modifiers."
   :group 'uiua)
 
-(defconst uiua--monadic-function-glyphs
-  (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
-	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
-	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
-
 (defun uiua-standalone-compile (arg)
   "Compile standalone executable with uiua stand.
 If ARG is not nil, prompts user for input and output names."
@@ -79,6 +74,11 @@ If ARG is not nil, prompts user for input and output names."
 	 (read-string (format "Output name (default %s): " executable-name)
 		      nil nil executable-name)))
   (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))))
+
+(defconst uiua--monadic-function-glyphs
+  (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
+	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
+	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
 ;; note: here, - should come first
 ;; because we create a regex from this list
@@ -114,13 +114,18 @@ If ARG is not nil, prompts user for input and output names."
 (defvar uiua--font-lock-defaults
   `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
       . font-lock-string-face)
-     ("[A-Z][a-zA-Z]*" . 'default)
+     (,(rx (seq upper (* alpha))) . 'default)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
      ("i\\([gdr]\\)" 1 'uiua-monadic-modifier )
      ("\\([gdr]\\)i" 1 'uiua-monadic-modifier )
      ("[gdr][gdr]?" . 'uiua-monadic-modifier )
-     ("[`¯]?[0-9]+\\(\\.[0-9]+\\)?" . 'uiua-number)
+     (,(rx
+       (seq
+	(opt (any "`¯"))
+	(one-or-more (any "0-9"))
+	(opt (group "." (one-or-more (any "0-9"))))))
+      . 'uiua-number)
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-function-glyphs
 	"not"
