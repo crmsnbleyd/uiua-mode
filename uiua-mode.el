@@ -40,7 +40,7 @@
   :group 'uiua)
 
 (defface uiua-dyadic-function
-  '((t (:inherit font-lock-builtin-face)))
+  '((t (:inherit font-lock-variable-name-face)))
   "Face used for Uiua in-built dyadic functions."
   :group 'uiua)
 
@@ -50,7 +50,7 @@
   :group 'uiua)
 
 (defface uiua-monadic-modifier
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit font-lock-builtin-face)))
   "Face used for Uiua in-built monadic modifiers."
   :group 'uiua)
 
@@ -123,8 +123,10 @@ If ARG is nil, prompts user for input and output names."
      (,(rx (seq upper (* alpha))) . 'default)
      ;; so that 'greater', meaning '≥' does
      ;; not collide with 'gr', meaning '⋅⟜'
-     (,(rx (seq "gre" (? "a" (? "t" (? "e" (? "r"))))))
-      . 'uiua-dyadic-function)
+     (,(uiua--generate-keyword-regex "gre" "ater") . 'uiua-dyadic-function)
+     ;; overrides for 'dip' and 'indexof'
+     (,(rx (or "dip" (seq "ind" (? "e" (? "x" (? "o" (? "f")))))))
+      . 'uiua-monadic-modifier)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
      ("i?\\([gdr][gdr]+\\)i?" 1 'uiua-monadic-modifier )
@@ -145,8 +147,6 @@ If ARG is nil, prompts user for input and output names."
 	'("sqr" . "t"))
       . 'uiua-monadic-function)
      ;; 'absolute' needs to be before 'abbyss'
-     ;; otherwise `abs' never gets highlighted
-     ;; as a monadic function.
      (,(uiua--generate-font-lock-matcher
 	uiua--ocean-function-glyphs
 	'("ab" . "yss")
@@ -160,10 +160,11 @@ If ARG is nil, prompts user for input and output names."
 	"equals"
 	"!="
 	'("les" . "s")
-
-	)
+	'("ind" . "exof"))
       . 'uiua-dyadic-function)
-     (,(concat "[" uiua--monadic-modifier-glyphs "]") . 'uiua-monadic-modifier)
+     (,(uiua--generate-font-lock-matcher
+	uiua--monadic-modifier-glyphs)
+      . 'uiua-monadic-modifier)
      (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
     nil nil nil))
 
