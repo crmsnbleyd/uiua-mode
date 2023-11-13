@@ -121,6 +121,10 @@ If ARG is nil, prompts user for input and output names."
   `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
       . font-lock-string-face)
      (,(rx (seq upper (* alpha))) . 'default)
+     ;; so that 'greater', meaning '≥' does
+     ;; not collide with 'gr', meaning '⋅⟜'
+     (,(rx (seq "gre" (? "a" (? "t" (? "e" (? "r"))))))
+      . 'uiua-dyadic-function)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
      ("i?\\([gdr][gdr]+\\)i?" 1 'uiua-monadic-modifier )
@@ -140,8 +144,9 @@ If ARG is nil, prompts user for input and output names."
 	'("abs" . "olute")
 	'("sqr" . "t"))
       . 'uiua-monadic-function)
-     ;; absolute needs to be before abbyss
+     ;; 'absolute' needs to be before 'abbyss'
      ;; otherwise `abs' never gets highlighted
+     ;; as a monadic function.
      (,(uiua--generate-font-lock-matcher
 	uiua--ocean-function-glyphs
 	'("ab" . "yss")
@@ -150,8 +155,15 @@ If ARG is nil, prompts user for input and output names."
 	'("se" . "abed")
 	"surface")
       . 'uiua-ocean-function)
+     (,(uiua--generate-font-lock-matcher
+	uiua--dyadic-function-glyphs
+	"equals"
+	"!="
+	'("les" . "s")
+
+	)
+      . 'uiua-dyadic-function)
      (,(concat "[" uiua--monadic-modifier-glyphs "]") . 'uiua-monadic-modifier)
-     (,(concat "[" uiua--dyadic-function-glyphs "]") . 'uiua-dyadic-function)
      (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
     nil nil nil))
 
@@ -266,14 +278,14 @@ output.  If CMD fails the buffer remains unchanged."
 (defun uiua-format-buffer ()
   "Format buffer using the in-built formatter."
   (interactive)
-  (let ((original-text-scale text-scale-mode-amount))
+  (let ((original-text-scale (if text-scale-mode text-scale-mode-amount 0)))
     (when (called-interactively-p "interactive")
       (unless uiua-command
 	(error "Uiua binary not found, please set `uiua-command'"))
       (message "Autoformatting code with %s fmt."
 	       uiua-command))
     (uiua--buffer-apply-command uiua-command (list "fmt"))
-    (when text-scale-mode (text-scale-set original-text-scale))))
+    (text-scale-set original-text-scale)))
 
 (defun uiua--replace-region (beg end replacement)
   "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
