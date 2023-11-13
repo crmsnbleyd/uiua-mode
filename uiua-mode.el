@@ -137,7 +137,7 @@ If ARG is not nil, prompts user for input and output names."
      ;; absolute needs to be before abbyss
      ;; otherwise `abs' never gets highlighted
      (,(uiua--generate-font-lock-matcher
-	uiua--ocean-glyphs
+	uiua--ocean-function-glyphs
 	'("ab" . "yss")
 	'("de" . "ep")
 	'("ro" . "ck")
@@ -193,14 +193,14 @@ and if it is a string, that literal string is matched."
   (string-remove-suffix
    "\\|"
    (apply 'concat "[" glyphs "]\\|"
-	  (map 'list
-	       (lambda (pair-or-string)
-		 (concat
-		  (if (consp pair-or-string)
+	  (mapcar
+	   (lambda (pair-or-string)
+	     (concat
+	      (if (consp pair-or-string)
 		  (uiua--generate-keyword-regex
 		   (car pair-or-string) (cdr pair-or-string))
-		  pair-or-string)
-		  "\\|"))
+		pair-or-string)
+	      "\\|"))
 	       word-prefix-suffix-pairs))))
 
 (defun uiua--buffer-apply-command (cmd &optional args)
@@ -265,7 +265,7 @@ output.  If CMD fails the buffer remains unchanged."
     (error "Uiua binary not found, please set `uiua-command'"))
   (when (called-interactively-p "interactive") (message "Autoformatting code with %s fmt."
 				 uiua-command))
-  (uiua-mode--buffer-apply-command uiua-command (list "fmt")))
+  (uiua--buffer-apply-command uiua-command (list "fmt")))
 
 (defun uiua--replace-region (beg end replacement)
   "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
