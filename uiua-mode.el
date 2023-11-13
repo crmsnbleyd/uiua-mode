@@ -1,4 +1,4 @@
-;;; uiua-mode.el --- Uiua integration for Emacs -*- lexical-binding:t -*-
+;;; uiua-mode.el --- Uiua integration -*- lexical-binding:t -*-
 ;;; Version: 0.0.5
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -7,7 +7,7 @@
 ;; Keywords: languages, uiua
 
 ;;; Commentary:
-;; `uiua-mode' is an Emacs major mode for interacting with
+;; `uiua-mode' is a major mode for interacting with
 ;; and editing the uiua array language
 
 ;;; Code:
@@ -58,14 +58,18 @@
   "Face used for Uiua in-built dyadic modifiers."
   :group 'uiua)
 
+(defvar uiua--*last-compiled-file* nil
+  "Last compiled output of `uiua-standalone-compile'.")
+
 (defun uiua-standalone-compile (arg)
   "Compile standalone executable with uiua stand.
-If ARG is not nil, prompts user for input and output names."
+If ARG is nil, prompts user for input and output names."
   (interactive "P")
   (save-buffer)
-  (let* ((input-file-name (buffer-file-name))
-	(executable-name (file-name-sans-extension input-file-name)))
-  (unless
+  (let* ((input-file-name (file-name-nondirectory (buffer-file-name)))
+	 (executable-name (or uiua--*last-compiled-file*
+			      (file-name-sans-extension input-file-name))))
+  (when
    (null arg)
    (setf input-file-name
 	 (read-string (format "File to compile (default %s): " input-file-name)
@@ -73,7 +77,8 @@ If ARG is not nil, prompts user for input and output names."
    (setf executable-name
 	 (read-string (format "Output name (default %s): " executable-name)
 		      nil nil executable-name)))
-  (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))))
+  (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))
+  (setf uiua--*last-compiled-file* executable-name)))
 
 (defconst uiua--monadic-function-glyphs
   (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
@@ -117,9 +122,9 @@ If ARG is not nil, prompts user for input and output names."
      (,(rx (seq upper (* alpha))) . 'default)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
+     ("i?\\([gdr][gdr]+\\)i?" 1 'uiua-monadic-modifier )
      ("i\\([gdr]\\)" 1 'uiua-monadic-modifier )
      ("\\([gdr]\\)i" 1 'uiua-monadic-modifier )
-     ("[gdr][gdr]?" . 'uiua-monadic-modifier )
      (,(rx
        (seq
 	(opt (any "`¯"))
@@ -186,7 +191,7 @@ regex shall match (LEN LENG LENGT LENGTH)."
 
 (defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
   "Create a regex that matches any character in GLYPHS.
-In addition, it matches words specified by the rest of args such that
+In addition, it matches words specified by WORD-PREFIX-SUFFIX-PAIRS such that
 if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
 it matches any concatenation of the PREFIX and initial substring of SUFFIX,
 and if it is a string, that literal string is matched."
