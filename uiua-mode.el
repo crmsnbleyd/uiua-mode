@@ -257,11 +257,10 @@ If GLYPHS is nil, only the latter behaviour is displayed."
       2 'uiua-noadic-or-constant)
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-modifier-glyphs
-	(rx-to-string '(seq "fo"
-			    (or (seq "r" (zero-or-one "k"))
-				(seq "l" (zero-or-one "d"))))))
+	'("fol" . "d")
+	'("for" . "k"))
       0 'uiua-dyadic-modifier t)
-     (,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
+     (,(rx (or (seq "$" (* (not "\n"))) (and "@" (or "\\\\" (not "\\")))))
       0 font-lock-string-face t))
     nil nil nil))
 

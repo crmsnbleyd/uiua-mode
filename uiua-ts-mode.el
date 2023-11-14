@@ -49,6 +49,10 @@
    '((modifier1 _) @uiua-monadic-modifier)
 
    :language 'uiua
+   :feature 'dyadic-modifier
+   '((modifier2 _) @uiua-dyadic-modifier)
+
+   :language 'uiua
    :feature 'ocean-function
    :override t
    '((function [ "⋄" "~" "≊" "≃" "∸"
@@ -79,7 +83,8 @@
 	      '((comment string)
 		(number)
 		(monadic-function
-		 monadic-modifier ocean-function noadic)))
+		 monadic-modifier dyadic-modifier
+		 ocean-function noadic)))
   (treesit-major-mode-setup))
 
 ;;;###autoload
