@@ -1,4 +1,4 @@
-;;; inferior-uiua.el --- Uiua integration for Emacs -*- lexical-binding:t -*-
+;;; inferior-uiua.el --- Uiua interpreter integration -*- lexical-binding:t -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
@@ -16,6 +16,9 @@
   :prefix "uiua-inferior-"
   :prefix "uiua-"
   :group 'uiua)
+
+(defvar uiua-inferior-prompt-regexp "^>>"
+  "Uiua inferior mode prompt.")
 
 (defcustom uiua-inferior-hook nil
   "The hook that is called after starting uiua-inferior."

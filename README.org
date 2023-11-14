@@ -1,6 +1,6 @@
 This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language
 
-Much like the language itself, this mode is currently in progress
+Much like the language itself, this mode is currently in progress.
 
 ** Setup
 There are two major modes: one which uses tree-sitter, and one which does not.
@@ -26,7 +26,11 @@ To use with tree-sitter
 #+end_src
 Upon loading a .ua file, emacs will complain about not finding the grammar.
 Simply type ~M-x treesit-install-language-grammar~ then ~uiua~ to install it.
+
 ** Screenshots
 Syntax highlighting of various uiua elements, in [[https://github.com/crmsnbleyd/flexoki-emacs-theme][flexoki-theme]].
 #+caption: Showing various glyphs with syntax highlighting
 [[https://github.com/crmsnbleyd/uiua-mode/blob/main/assets/uiua-example.png]]
+
+** Contributors
+~uiua-ts-mode~ currently uses a grammar by [[https://github.com/shnarazk/tree-sitter-uiua][@shnarazk]].

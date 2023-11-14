@@ -357,6 +357,9 @@ output.  If CMD fails the buffer remains unchanged."
   "Generic Major mode for editing Uiua files."
   :syntax-table uiua--syntax-table
   :group 'uiua
+  (add-hook
+   'before-save-hook
+   'uiua-format-buffer nil t)
   (setq-local comment-start "#")
   (setq-local comment-start-skip "#+\\s-*"))
 
