@@ -39,14 +39,30 @@
    :language 'uiua
    :feature 'number
    '((number) @uiua-number)
-   
+
    :language 'uiua
    :feature 'monadic-function
    '((function _) @uiua-monadic-function)
-   
+
    :language 'uiua
    :feature 'monadic-modifier
    '((modifier1 _) @uiua-monadic-modifier)
+
+   :language 'uiua
+   :feature 'ocean-function
+   :override t
+   '((function [ "⋄" "~" "≊" "≃" "∸"
+       "ab" "abyss"
+       "de" "deep"
+       "ro" "rock"
+       "se" "seabed"
+       "surface"])
+     @uiua-ocean-function)
+
+   :language 'uiua
+   :override t
+   :feature 'noadic
+   '((constant _) @uiua-noadic-or-constant)
 
    :language 'uiua
    :override t
@@ -62,7 +78,8 @@
   (setq-local treesit-font-lock-feature-list
 	      '((comment string)
 		(number)
-		(monadic-function monadic-modifier)))
+		(monadic-function
+		 monadic-modifier ocean-function noadic)))
   (treesit-major-mode-setup))
 
 ;;;###autoload
