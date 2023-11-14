@@ -11,6 +11,7 @@
 ;; and editing the uiua array language
 
 ;;; Code:
+(require 'face-remap)
 (require 'seq)
 (eval-when-compile (require 'rx))
 
@@ -88,6 +89,39 @@ If ARG is nil, prompts user for input and output names."
 		      nil nil executable-name)))
   (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))
   (setf uiua--*last-compiled-file* executable-name)))
+
+;; Possible enhancement: macro to generate an `rx' form
+(defun uiua--generate-keywords (prefix other-letters)
+  "Generate all prefix strings of PREFIX ++ OTHER-LETTERS.
+
+For example when called with \"LEN\" and \"GTH\", the generated
+regex shall match (LEN LENG LENGT LENGTH)."
+  (seq-reduce
+   (lambda (word-list ch)
+     (cons
+      (format "%s%c"
+	      (car word-list) ch)
+      word-list))
+   other-letters
+   (list prefix)))
+
+(defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
+  "Create a regex that matches any character in GLYPHS.
+In addition, it matches words specified by WORD-PREFIX-SUFFIX-PAIRS such that
+if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
+it matches any concatenation of the PREFIX and initial substring of SUFFIX,
+and if it is a string, that literal string is matched.
+If GLYPHS is nil, only the latter behaviour is displayed."
+  (concat
+   (if glyphs
+       (concat (regexp-opt-charset glyphs) "\\|") "")
+   (regexp-opt
+    (mapcan
+     (lambda (item)
+       (if (stringp item)
+	   (list item)
+	 (uiua--generate-keywords (car item) (cdr item))))
+     word-prefix-suffix-pairs))))
 
 (defconst uiua--noadic-glyphs
   (list ?⚂ ?η ?π ?τ ?∞))
@@ -244,39 +278,6 @@ If ARG is nil, prompts user for input and output names."
     (modify-syntax-entry ?` "_ " table)
     table)
   "Syntax table for `uiua-mode'.")
-
-;; Possible enhancement: macro to generate an `rx' form
-(defun uiua--generate-keywords (prefix other-letters)
-  "Generate all prefix strings of PREFIX ++ OTHER-LETTERS.
-
-For example when called with \"LEN\" and \"GTH\", the generated
-regex shall match (LEN LENG LENGT LENGTH)."
-  (seq-reduce
-   (lambda (word-list ch)
-     (cons
-      (format "%s%c"
-	      (car word-list) ch)
-      word-list))
-   other-letters
-   (list prefix)))
-
-(defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
-  "Create a regex that matches any character in GLYPHS.
-In addition, it matches words specified by WORD-PREFIX-SUFFIX-PAIRS such that
-if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
-it matches any concatenation of the PREFIX and initial substring of SUFFIX,
-and if it is a string, that literal string is matched.
-If GLYPHS is nil, only the latter behaviour is displayed."
-  (concat
-   (if glyphs
-       (concat (regexp-opt-charset glyphs) "\\|") "")
-   (regexp-opt
-    (mapcan
-     (lambda (item)
-       (if (stringp item)
-	   (list item)
-	 (uiua--generate-keywords (car item) (cdr item))))
-     word-prefix-suffix-pairs))))
 
 (defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
