@@ -170,16 +170,16 @@ If ARG is nil, prompts user for input and output names."
       . 'uiua-ocean-function)
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-function-glyphs
-	(regexp-opt
-	 '("equals" "add"
-	   "subtract" "deal"
-	   "send" "&fwa"
-	   "&imd" "&ime"
-	   "&tcpsrt"
-	   "&tcpswt"
-	   "!=" "*"
-	   "%"))
+	"equals" "add"
+	"subtract" "deal"
+	"send" "&fwa"
+	"&imd" "&ime"
+	"&tcpsrt"
+	"&tcpswt"
+	"!=" "*"
+	"%"
 	'("ata" . "ngent")
+	'("ass" . "ert")
 	'("comp" . "lex")
 	'("cou" . "ple")
 	'("fin" . "d")
@@ -218,7 +218,12 @@ If ARG is nil, prompts user for input and output names."
 	(regexp-opt '("pi" "i" "e")))
        "\\)\\([^&a-zA-Z]\\|$\\)")
       2 'uiua-noadic-or-constant)
-     (,(concat "[" uiua--dyadic-modifier-glyphs "]") . 'uiua-dyadic-modifier))
+     (,(uiua--generate-font-lock-matcher
+	uiua--dyadic-modifier-glyphs
+	(rx-to-string '(seq "fo"
+			    (or (seq "r" (zero-or-one "k"))
+				(seq "l" (zero-or-one "d"))))))
+      0 'uiua-dyadic-modifier t))
     nil nil nil))
 
 (defvar uiua--syntax-table
@@ -236,26 +241,19 @@ If ARG is nil, prompts user for input and output names."
   "Syntax table for `uiua-mode'.")
 
 ;; Possible enhancement: macro to generate an `rx' form
-(defun uiua--generate-keyword-regex (prefix other-letters)
-  "Generate a valid regex string.
-When given a string PREFIX and OTHER-LETTERS, generates a
-regex string that matches all words starting with PREFIX
-and the rest of the word being any initial sublist of OTHER-LETTERS.
+(defun uiua--generate-keywords (prefix other-letters)
+  "Generate all prefix strings of PREFIX ++ OTHER-LETTERS.
 
 For example when called with \"LEN\" and \"GTH\", the generated
 regex shall match (LEN LENG LENGT LENGTH)."
-  (let ((suffix-length (length other-letters))
-	(res (list)))
-    (dotimes (_ suffix-length) (setf res (cons "\\)?" res)))
-    ;; loop across characters from OTHER-LETTERS in reverse
-    (while (> suffix-length 0)
-      (setf res
-	    (cons
-	     (format "\\(%c"
-		     (aref other-letters
-			   (cl-decf suffix-length)))
-	     res)))
-    (apply 'concat prefix res)))
+  (seq-reduce
+   (lambda (word-list ch)
+     (cons
+      (format "%s%c"
+	      (car word-list) ch)
+      word-list))
+   other-letters
+   (list prefix)))
 
 (defun uiua--generate-font-lock-matcher (glyphs &rest word-prefix-suffix-pairs)
   "Create a regex that matches any character in GLYPHS.
@@ -264,21 +262,16 @@ if they are a cons cell of the form (PREFIX . SUFFIX), both strings,
 it matches any concatenation of the PREFIX and initial substring of SUFFIX,
 and if it is a string, that literal string is matched.
 If GLYPHS is nil, only the latter behaviour is displayed."
-  (string-remove-suffix
-   "\\|"
-   (let ((pair-matching-regex
-	  (mapcar
-	   (lambda (pair-or-string)
-	     (concat
-	      (if (consp pair-or-string)
-		  (uiua--generate-keyword-regex
-		   (car pair-or-string) (cdr pair-or-string))
-		pair-or-string)
-	      "\\|"))
-	   word-prefix-suffix-pairs)))
-     (if glyphs
-	 (apply 'concat (regexp-opt-charset glyphs) "\\|" pair-matching-regex)
-         (apply 'concat pair-matching-regex)))))
+  (concat
+   (if glyphs
+       (concat (regexp-opt-charset glyphs) "\\|") "")
+   (regexp-opt
+    (mapcan
+     (lambda (item)
+       (if (stringp item)
+	   (list item)
+	 (uiua--generate-keywords (car item) (cdr item))))
+     word-prefix-suffix-pairs))))
 
 (defun uiua--buffer-apply-command (cmd &optional args)
   "Execute shell command CMD with ARGS and current buffer as input and output.
