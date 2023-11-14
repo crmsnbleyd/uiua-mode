@@ -11,6 +11,9 @@
 ;; and editing the uiua array language
 
 ;;; Code:
+(require 'seq)
+(eval-when-compile (require 'rx))
+
 (defgroup uiua nil
   "Major mode for editing the Uiua array language."
   :prefix "uiua-"
