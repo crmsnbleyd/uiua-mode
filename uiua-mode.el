@@ -123,9 +123,26 @@ If ARG is nil, prompts user for input and output names."
 ;; TODO use matching functions instead of regexes
 ;; in order to allow lowercase variables
 (defvar uiua--font-lock-defaults
-  `(((,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
-      . font-lock-string-face)
-     (,(rx (seq upper (* alpha))) . 'default)
+  `(((,(rx (seq upper (* alpha))) . 'default)
+     (,(uiua--generate-font-lock-matcher
+	uiua--monadic-modifier-glyphs
+	"dip"
+	'("pic" . "k")    ;; conflict with pi
+	'("res" . "hape") ;; conflict with reach
+	'("dro" . "p")	  ;; conflict with 'dr': dip reach
+	'("rot" . "ate")  ;; conflict with rock
+	'("sel" . "ect")  ;; conflict with seabed
+	'("div" . "ide"))
+      . 'uiua-monadic-modifier)
+     (,(uiua--generate-font-lock-matcher
+	uiua--monadic-function-glyphs
+	"&ims" ;; conflict with &i
+	'("abs" . "olute"); conflict with abbyss
+	'("des" . "hape"); conflict with deep
+	'("rev" . "erse"); conflict with reach
+	'("ris" . "e") ;; conflict with `ri': reach identity
+	'("rou" . "nd")) ; conflict with rock
+      . 'uiua-monadic-function)
      ;; next three regices are shortcuts to match
      ;; [gdri]{2,} as planet notation
      ("i?\\([gdr][gdr]+\\)i?" 1 'uiua-monadic-modifier )
@@ -141,25 +158,19 @@ If ARG is nil, prompts user for input and output names."
 	uiua--monadic-function-glyphs
 	"not"
 	"`"
-	"&ims" ;; conflict with &i
-	'("abs" . "olute"); conflict with abbyss
 	'("bit" . "s")
 	'("cei" . "ling")
-	'("des" . "hape"); conflict with deep
 	'("fal" . "l")
 	'("fir" . "st")
 	'("flo" . "or")
 	'("len" . "gth")
 	'("rang" . "e")
-	'("rev" . "erse"); conflict with reach
-	'("ris" . "e") ;; conflict with `ri': reach identity
-	'("rou" . "nd") ; conflict with rock
 	'("sha" . "pe")
 	'("sig" . "n")
 	'("sin" . "e")
 	'("sqr" . "t")
 	'("tran" . "spose"))
-      0 'uiua-monadic-function t)
+      . 'uiua-monadic-function)
      (,(uiua--generate-font-lock-matcher
 	uiua--ocean-function-glyphs
 	'("ab" . "yss")
@@ -178,39 +189,28 @@ If ARG is nil, prompts user for input and output names."
 	"&tcpswt"
 	"!=" "*"
 	"%"
-	'("ata" . "ngent")
-	'("ass" . "ert")
-	'("comp" . "lex")
-	'("cou" . "ple")
 	'("fin" . "d")
-	'("ind" . "exof")
-	'("gre" . "ater")
 	'("joi" . "n")
 	'("kee" . "p")
 	'("les" . "s")
-	'("log" . "arithm")
+	'("tak" . "e")
 	'("mat" . "ch")
+	'("pow" . "er")
+	'("rege" . "x")
+	'("ass" . "ert")
+	'("cou" . "ple")
+	'("mem" . "ber")
+	'("ind" . "exof")
+	'("gre" . "ater")
 	'("max" . "imum")
 	'("min" . "imum")
 	'("mod" . "ulus")
-	'("mul" . "tiply")
-	'("pow" . "er")
-	'("rege" . "x")
-	'("tak" . "e")
 	'("win" . "dows")
-	'("mem" . "ber"))
-      0 'uiua-dyadic-function t)
-     (,(uiua--generate-font-lock-matcher
-	uiua--monadic-modifier-glyphs
-	"dip"
-	'("div" . "ide")
-	'("pic" . "k")    ;; conflict with pi
-	'("res" . "hape") ;; conflict with reach
-	'("dro" . "p")	  ;; conflict with 'dr': dip reach
-	'("rot" . "ate")  ;; conflict with rock
-	'("sel" . "ect")  ;; conflict with seabed
-       )
-      0 'uiua-monadic-modifier t)
+	'("ata" . "ngent")
+	'("mul" . "tiply")
+	'("log" . "arithm")
+	'("comp" . "lex"))
+      . 'uiua-dyadic-function)
      (,(concat
        "\\(^\\|[^&a-zA-Z]\\)\\("
        (uiua--generate-font-lock-matcher
@@ -223,7 +223,9 @@ If ARG is nil, prompts user for input and output names."
 	(rx-to-string '(seq "fo"
 			    (or (seq "r" (zero-or-one "k"))
 				(seq "l" (zero-or-one "d"))))))
-      0 'uiua-dyadic-modifier t))
+      0 'uiua-dyadic-modifier t)
+     (,(rx (or "$" (and "@" (or "\\\\" (not "\\")))))
+      0 font-lock-string-face t))
     nil nil nil))
 
 (defvar uiua--syntax-table
@@ -347,10 +349,18 @@ output.  If CMD fails the buffer remains unchanged."
       (delete-region beg end)))
 
 ;;;###autoload
-(define-derived-mode uiua-mode prog-mode "Uiua"
-  "Major mode for editing Uiua files."
+(define-derived-mode uiua-base-mode prog-mode "Uiua"
+  "Generic Major mode for editing Uiua files."
   :syntax-table uiua--syntax-table
   :group 'uiua
+  (setq-local comment-start "#")
+  (setq-local comment-start-skip "#+\\s-*"))
+
+;;;###autoload
+(define-derived-mode uiua-mode uiua-base-mode "Uiua"
+  "Major mode for editing Uiua files."
+  :group 'uiua
+  (add-to-list 'hs-special-modes-alist '(uiua-mode "{\\|" "}\\|]" "#"))
   (setq-local font-lock-defaults uiua--font-lock-defaults))
 
 ;;;###autoload
