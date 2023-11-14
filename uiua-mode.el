@@ -54,7 +54,7 @@
   :group 'uiua)
 
 (defface uiua-ocean-function
-  '((t (:inherit font-lock-constant-face)))
+  '((t (:inherit font-lock-keyword-face)))
   "Face used for Uiua ocean functions."
   :group 'uiua)
 
