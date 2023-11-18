@@ -26,8 +26,7 @@
   :group 'uiua)
 
 (defcustom uiua-command
-  (cond ((executable-find "uiua") "uiua")
-	(t "/usr/bin/uiua"))
+  "uiua"
   "Default command to use Uiua."
   :group 'uiua-mode
   :version "27.1"
