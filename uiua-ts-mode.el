@@ -63,11 +63,11 @@
    :feature 'ocean-function
    :override t
    '((function [ "⋄" "~" "≊" "≃" "∸"
-       "ab" "abyss"
-       "de" "deep"
-       "ro" "rock"
-       "se" "seabed"
-       "surface"])
+                 "ab" "abyss"
+                 "de" "deep"
+                 "ro" "rock"
+                 "se" "seabed"
+                 "surface"])
      @uiua-ocean-function)
 
    :language 'uiua
