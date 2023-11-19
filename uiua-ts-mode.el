@@ -27,6 +27,10 @@
      ((query ((array (closeCurly)@curly :?
 		     (closeBracket)@bracket :?)))
       parent 0)
+     ((query ((inlineFunction
+	       (closeParen)@paren :?))
+      parent 0)
+     ((parent-is "inlineFunction") parent 2)
      ((parent-is "array") parent 2))))
 
 (defvar uiua--ts-font-lock-rules
@@ -39,6 +43,12 @@
    :language 'uiua
    :feature 'number
    '((number) @uiua-number)
+
+   :language 'uiua
+   :feature 'default
+   :override t
+   '((function [ "." "∘" "id" "identity"])
+     @default)
 
    :language 'uiua
    :feature 'monadic-function
@@ -80,7 +90,7 @@
   (setq-local treesit-simple-indent-rules
 	      uiua--ts-indent-rules)
   (setq-local treesit-font-lock-feature-list
-	      '((comment string)
+	      '((comment default string)
 		(number)
 		(monadic-function
 		 monadic-modifier dyadic-modifier
