@@ -18,10 +18,6 @@
   :prefix "uiua-"
   :group 'uiua)
 
-(defcustom uiua-ts-mode-hook nil
-  "The hook that is called after starting uiua-ts-mode."
-  :type 'hook)
-
 (defvar uiua--ts-indent-rules
   `((uiua
      ((parent-is "program") parent-bol 0)
