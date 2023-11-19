@@ -279,6 +279,11 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :input-file (reformatter-temp-file-in-current-directory)
   :lighter " UiuaFmt")
 
+;; https://emacswiki.org/emacs/ModeTutorial#h5o-3 
+(defun uiua-indent-line ()
+  "Indent current line as Uiua code."
+  (interactive))
+
 ;;;###autoload
 (define-derived-mode uiua-base-mode prog-mode "Uiua"
   "Generic Major mode for editing Uiua files."
