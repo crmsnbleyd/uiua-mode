@@ -18,7 +18,7 @@
   :prefix "uiua-"
   :group 'uiua)
 
-(defvar uiua--ts-indent-rules
+(defvar uiua-ts--indent-rules
   `((uiua
      ((parent-is "program") parent-bol 0)
      ((query ((array (closeCurly)@curly :?
@@ -30,7 +30,7 @@
       ((parent-is "inlineFunction") parent 2)
       ((parent-is "array") parent 2)))))
 
-(defvar uiua--ts-font-lock-rules
+(defvar uiua-ts--font-lock-rules
   (treesit-font-lock-rules
    :language 'uiua
    :feature 'string
@@ -80,12 +80,12 @@
    :feature 'comment
    '((comment) @font-lock-comment-face)))
 
-(defun uiua--ts-setup ()
+(defun uiua-ts--setup ()
   "Setup for uiua treesitter mode."
   (setq-local treesit-font-lock-settings
-	      uiua--ts-font-lock-rules)
+	      uiua-ts--font-lock-rules)
   (setq-local treesit-simple-indent-rules
-	      uiua--ts-indent-rules)
+	      uiua-ts--indent-rules)
   (setq-local treesit-font-lock-feature-list
 	      '((comment default string)
 		(number)
@@ -105,7 +105,7 @@ Uses tree-sitter."
   (setq-local font-lock-defaults nil) ; to let ts do the hard work
   (when (treesit-ready-p 'uiua)
     (treesit-parser-create 'uiua)
-    (uiua--ts-setup)))
+    (uiua-ts--setup)))
 
 (provide 'uiua-ts-mode)
 
