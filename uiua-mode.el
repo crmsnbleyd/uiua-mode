@@ -3,7 +3,7 @@
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "27.1") (reformatter "0.7"))
 ;; Keywords: languages, uiua
 
 ;;; Commentary:
@@ -13,6 +13,7 @@
 ;;; Code:
 (require 'face-remap)
 (require 'seq)
+(require 'reformatter)
 (eval-when-compile (require 'rx))
 
 (defgroup uiua nil
@@ -268,88 +269,24 @@ If GLYPHS is nil, only the latter behaviour is displayed."
     table)
   "Syntax table for `uiua-mode'.")
 
-(defun uiua--buffer-apply-command (cmd &optional args)
-  "Execute shell command CMD with ARGS and current buffer as input and output.
-Use buffer as input and replace the whole buffer with the
-output.  If CMD fails the buffer remains unchanged."
-  (set-buffer-modified-p t)
-  (let* ((out-file (make-temp-file "uiua-output"))
-	 (err-file (make-temp-file "uiua-error"))
-	 (coding-system-for-read 'utf-8)
-	 (coding-system-for-write 'utf-8))
-    (unwind-protect
-	(let ((curr-file (buffer-file-name))
-	      (curr-bufname (buffer-name))
-	      (message-log-max nil))
-	  (set-visited-file-name out-file)
-	  (with-temp-message "" (save-buffer))
-	  (set-visited-file-name curr-file)
-	  (rename-buffer curr-bufname))
-	(let* ((_errcode
-		(apply 'call-process cmd nil
-		       `(,(get-buffer-create "*uiua-output*") ,err-file)
-		       nil
-		       (append args (list out-file))))
-	       (err-file-empty-p
-		(equal 0 (nth 7 (file-attributes err-file))))
-	       (out-file-empty-p
-		(equal 0 (nth 7 (file-attributes out-file)))))
-	  (if err-file-empty-p
-	      (if out-file-empty-p
-		  (message "Error: %s produced no output and no errors, buffer is unchanged" cmd)
-		;; Command successful, insert file with replacement to preserve
-		;; markers.
-		(insert-file-contents out-file nil nil nil t))
-	    (progn
-	      ;; non-null stderr, command must have failed
-	      (with-current-buffer
-		  (get-buffer-create "*uiua-mode*")
-		(insert-file-contents err-file)
-		(buffer-string))
-	      (message "Error: %s ended with errors, leaving buffer alone, see *uiua-mode* buffer for stderr" cmd)
-	      (with-temp-buffer
-		(insert-file-contents err-file)
-		;; use (warning-minimum-level :debug) to see this
-		(display-warning cmd
-				 (buffer-substring-no-properties (point-min) (point-max))
-				 :debug)))))
-      (ignore-errors
-	(delete-file err-file))
-      (ignore-errors
-	(delete-file out-file)))))
-
-(defun uiua-process-load-file ()
-  "Load the file currently open in buffer."
-  (interactive))
-
-(defun uiua-format-buffer ()
-  "Format buffer using the in-built formatter."
-  (interactive)
-  (let ((original-text-scale (if text-scale-mode text-scale-mode-amount 0)))
-    (when (called-interactively-p "interactive")
-      (unless uiua-command
-	(error "Uiua binary not found, please set `uiua-command'"))
-      (message "Autoformatting code with %s fmt."
-	       uiua-command))
-    (uiua--buffer-apply-command uiua-command (list "fmt"))
-    (text-scale-set original-text-scale)))
-
-(defun uiua--replace-region (beg end replacement)
-  "Replace text in BUFFER in region (BEG END) with REPLACEMENT."
-    (save-excursion
-      (goto-char (point-min))
-      (insert replacement)
-      (delete-region beg end)))
+;;;###autoload (autoload 'uiua-format-buffer "uiua-mode" nil t)
+;;;###autoload (autoload 'uiua-format-on-save-mode "uiua-mode" nil t)
+(reformatter-define uiua-format
+  :program uiua-command
+  :args (list "fmt")
+  :stdin nil
+  :stdout nil
+  :input-file (reformatter-temp-file-in-current-directory)
+  :lighter " UiuaFmt")
 
 ;;;###autoload
 (define-derived-mode uiua-base-mode prog-mode "Uiua"
   "Generic Major mode for editing Uiua files."
   :syntax-table uiua--syntax-table
-  (add-hook
-   'before-save-hook
-   'uiua-format-buffer nil t)
   (setq-local comment-start "#")
   (setq-local comment-start-skip "#+\\s-*"))
+
+(add-hook 'uiua-base-mode-hook 'uiua-format-on-save-mode)
 
 ;;;###autoload
 (define-derived-mode uiua-mode uiua-base-mode "Uiua"
