@@ -22,50 +22,41 @@
 
 (defcustom uiua-mode-hook nil
   "The hook that is called after loading `uiua-mode'."
-  :type 'hook
-  :group 'uiua)
+  :type 'hook)
 
 (defcustom uiua-command
   "uiua"
   "Default command to use Uiua."
-  :group 'uiua-mode
   :version "27.1"
   :type 'string)
 
 (defface uiua-number
   '((t (:inherit font-lock-function-name-face)))
-  "Face used for numbers in Uiua."
-  :group 'uiua)
+  "Face used for numbers in Uiua.")
 
 (defface uiua-noadic-or-constant
   '((t (:inherit font-lock-preprocessor-face)))
-  "Face used for noadic functions and builtin contants."
-  :group 'uiua)
+  "Face used for noadic functions and builtin contants.")
 
 (defface uiua-monadic-function
   '((t (:inherit font-lock-builtin-face)))
-  "Face used for Uiua in-built monadic functions."
-  :group 'uiua)
+  "Face used for Uiua in-built monadic functions.")
 
 (defface uiua-dyadic-function
   '((t (:inherit font-lock-variable-name-face)))
-  "Face used for Uiua in-built dyadic functions."
-  :group 'uiua)
+  "Face used for Uiua in-built dyadic functions.")
 
 (defface uiua-ocean-function
   '((t (:inherit font-lock-keyword-face)))
-  "Face used for Uiua ocean functions."
-  :group 'uiua)
+  "Face used for Uiua ocean functions.")
 
 (defface uiua-monadic-modifier
   '((t (:inherit font-lock-type-face)))
-  "Face used for Uiua in-built monadic modifiers."
-  :group 'uiua)
+  "Face used for Uiua in-built monadic modifiers.")
 
 (defface uiua-dyadic-modifier
   '((t (:inherit font-lock-constant-face)))
-  "Face used for Uiua in-built dyadic modifiers."
-  :group 'uiua)
+  "Face used for Uiua in-built dyadic modifiers.")
 
 (defvar uiua--*last-compiled-file* nil
   "Last compiled output of `uiua-standalone-compile'.")
@@ -354,7 +345,6 @@ output.  If CMD fails the buffer remains unchanged."
 (define-derived-mode uiua-base-mode prog-mode "Uiua"
   "Generic Major mode for editing Uiua files."
   :syntax-table uiua--syntax-table
-  :group 'uiua
   (add-hook
    'before-save-hook
    'uiua-format-buffer nil t)
@@ -364,7 +354,6 @@ output.  If CMD fails the buffer remains unchanged."
 ;;;###autoload
 (define-derived-mode uiua-mode uiua-base-mode "Uiua"
   "Major mode for editing Uiua files."
-  :group 'uiua
   (add-to-list 'hs-special-modes-alist '(uiua-mode "{\\|" "}\\|]" "#"))
   (setq-local font-lock-defaults uiua--font-lock-defaults))
 
