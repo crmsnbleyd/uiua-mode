@@ -177,10 +177,10 @@ If GLYPHS is nil, only the latter behaviour is displayed."
      ("i\\([gdr]\\)" 1 'uiua-monadic-modifier )
      ("\\([gdr]\\)i" 1 'uiua-monadic-modifier )
      (,(rx
-       (seq
-	(opt (any "`¯"))
-	(one-or-more (any "0-9"))
-	(opt (group "." (one-or-more (any "0-9"))))))
+        (seq
+	 (opt (any "`¯"))
+	 (one-or-more (any "0-9"))
+	 (opt (group "." (one-or-more (any "0-9"))))))
       . 'uiua-number)
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-function-glyphs
@@ -240,11 +240,11 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 	'("comp" . "lex"))
       . 'uiua-dyadic-function)
      (,(concat
-       "\\(^\\|[^&a-zA-Z]\\)\\("
-       (uiua--generate-font-lock-matcher
-	uiua--noadic-glyphs
-	(regexp-opt '("pi" "i" "e")))
-       "\\)\\([^&a-zA-Z]\\|$\\)")
+        "\\(^\\|[^&a-zA-Z]\\)\\("
+        (uiua--generate-font-lock-matcher
+	 uiua--noadic-glyphs
+	 (regexp-opt '("pi" "i" "e")))
+        "\\)\\([^&a-zA-Z]\\|$\\)")
       2 'uiua-noadic-or-constant)
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-modifier-glyphs
@@ -261,7 +261,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
     ;; so that they are parsed separately
     (dolist (i uiua--primitives)
       (dolist (j i)
-      (modify-syntax-entry j "." table)))
+        (modify-syntax-entry j "." table)))
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">" table)
     (modify-syntax-entry ?@ "_" table)
