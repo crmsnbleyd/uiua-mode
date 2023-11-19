@@ -26,9 +26,9 @@
       parent 0)
      ((query ((inlineFunction
 	       (closeParen)@paren :?))
-      parent 0)
-     ((parent-is "inlineFunction") parent 2)
-     ((parent-is "array") parent 2))))
+             parent 0)
+      ((parent-is "inlineFunction") parent 2)
+      ((parent-is "array") parent 2)))))
 
 (defvar uiua--ts-font-lock-rules
   (treesit-font-lock-rules
