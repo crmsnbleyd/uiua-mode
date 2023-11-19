@@ -3,6 +3,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
 ;; Keywords: languages, uiua
+;; Package-Requires: ((emacs "29.1") (uiua-mode "0.1"))
 
 ;;; Commentary:
 ;; A major mode for Uiua that uses treesitter for parsing
@@ -12,16 +13,12 @@
 (require 'treesit)
 
 (defgroup uiua-ts nil
-  "Settings for ts-powered Uiua"
+  "Settings for ts-powered Uiua."
   :prefix "uiua-ts-"
   :prefix "uiua-"
   :group 'uiua)
 
-(defcustom uiua-ts-mode-hook nil
-  "The hook that is called after starting uiua-ts-mode."
-  :type 'hook)
-
-(defvar uiua--ts-indent-rules
+(defvar uiua-ts--indent-rules
   `((uiua
      ((parent-is "program") parent-bol 0)
      ((query ((array (closeCurly)@curly :?
@@ -29,11 +26,11 @@
       parent 0)
      ((query ((inlineFunction
 	       (closeParen)@paren :?))
-      parent 0)
-     ((parent-is "inlineFunction") parent 2)
-     ((parent-is "array") parent 2))))
+             parent 0)
+      ((parent-is "inlineFunction") parent 2)
+      ((parent-is "array") parent 2)))))
 
-(defvar uiua--ts-font-lock-rules
+(defvar uiua-ts--font-lock-rules
   (treesit-font-lock-rules
    :language 'uiua
    :feature 'string
@@ -66,11 +63,11 @@
    :feature 'ocean-function
    :override t
    '((function [ "⋄" "~" "≊" "≃" "∸"
-       "ab" "abyss"
-       "de" "deep"
-       "ro" "rock"
-       "se" "seabed"
-       "surface"])
+                 "ab" "abyss"
+                 "de" "deep"
+                 "ro" "rock"
+                 "se" "seabed"
+                 "surface"])
      @uiua-ocean-function)
 
    :language 'uiua
@@ -83,12 +80,12 @@
    :feature 'comment
    '((comment) @font-lock-comment-face)))
 
-(defun uiua--ts-setup ()
+(defun uiua-ts--setup ()
   "Setup for uiua treesitter mode."
   (setq-local treesit-font-lock-settings
-	      uiua--ts-font-lock-rules)
+	      uiua-ts--font-lock-rules)
   (setq-local treesit-simple-indent-rules
-	      uiua--ts-indent-rules)
+	      uiua-ts--indent-rules)
   (setq-local treesit-font-lock-feature-list
 	      '((comment default string)
 		(number)
@@ -108,7 +105,7 @@ Uses tree-sitter."
   (setq-local font-lock-defaults nil) ; to let ts do the hard work
   (when (treesit-ready-p 'uiua)
     (treesit-parser-create 'uiua)
-    (uiua--ts-setup)))
+    (uiua-ts--setup)))
 
 (provide 'uiua-ts-mode)
 
