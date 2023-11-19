@@ -13,7 +13,7 @@
 (require 'treesit)
 
 (defgroup uiua-ts nil
-  "Settings for ts-powered Uiua"
+  "Settings for ts-powered Uiua."
   :prefix "uiua-ts-"
   :prefix "uiua-"
   :group 'uiua)
