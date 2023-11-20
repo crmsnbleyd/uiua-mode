@@ -60,17 +60,6 @@
    '((modifier2 _) @uiua-dyadic-modifier)
 
    :language 'uiua
-   :feature 'ocean-function
-   :override t
-   '((function [ "⋄" "~" "≊" "≃" "∸"
-                 "ab" "abyss"
-                 "de" "deep"
-                 "ro" "rock"
-                 "se" "seabed"
-                 "surface"])
-     @uiua-ocean-function)
-
-   :language 'uiua
    :override t
    :feature 'noadic
    '((constant _) @uiua-noadic-or-constant)
@@ -91,7 +80,7 @@
 		(number)
 		(monadic-function
 		 monadic-modifier dyadic-modifier
-		 ocean-function noadic)))
+		 noadic)))
   (treesit-major-mode-setup))
 
 ;;;###autoload
