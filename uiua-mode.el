@@ -119,24 +119,21 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 
 (defconst uiua--monadic-function-glyphs
   (list ?¬ ?± ?¯ ?⌵ ?√ ?○ ?⌊ ?⌈ ?\⁅
-	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?⋯ ?⍉
+	?⧻ ?△ ?⇡ ?⊢ ?⇌ ?♭ ?¤ ?⋯ ?⍉
 	?⍏ ?⍖ ?⊚ ?⊛ ?⊝ ?□ ?⊔))
 
 (defconst uiua--dyadic-function-glyphs
   (list ?- ?= ?≠ ?< ?≤ ?> ?≥ ?+ ?×
 	?÷ ?◿ ?ⁿ ?ₙ ?↧ ?↥ ?∠ ?ℂ
-	?≍ ?⊟ ?⊂ ?⊏ ?⊡ ?↯ ?↙ ?↘
+	?≍ ?⊟ ?⊂ ?⊏ ?⊡ ?↯ ?☇ ?↙ ?↘
 	?↻ ?◫ ?▽ ?⌕ ?∊ ?⊗ ?⍤))
 
-(defconst uiua--ocean-function-glyphs
-  (list ?⋄ ?~ ?≊ ?≃ ?∸))
-
 (defconst uiua--monadic-modifier-glyphs
-  (list ?/ ?\\ ?∵ ?≡ ?∺ ?≐ ?⊞ ?⊠ ?⍥
+  (list ?/ ?\\ ?∵ ?≡ ?∺ ?⊠ ?⍥
 	?⊕ ?⊜ ?⊐ ?⍘ ?⋅ ?⟜ ?⊙ ?∩))
 
 (defconst uiua--dyadic-modifier-glyphs
-  (list ?⊃ ?⊓ ?⍜ ?⍢ ?⬚ ?≑ ?∧ ?◳ ?⍣))
+  (list ?⊃ ?⊓ ?⍜ ?⍢ ?⬚ ?∧ ?⍣))
 
 (defconst uiua--primitives
   (list
@@ -155,6 +152,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-modifier-glyphs
 	"dip"
+	'("rer" . "ank")
 	'("pic" . "k")    ;; conflict with pi
 	'("res" . "hape") ;; conflict with reach
 	'("dro" . "p")	  ;; conflict with 'dr': dip reach
@@ -185,6 +183,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
      (,(uiua--generate-font-lock-matcher
 	uiua--monadic-function-glyphs
 	"not"
+	"fix"
 	"`"
 	'("bit" . "s")
 	'("cei" . "ling")
@@ -199,14 +198,6 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 	'("sqr" . "t")
 	'("tran" . "spose"))
       . 'uiua-monadic-function)
-     (,(uiua--generate-font-lock-matcher
-	uiua--ocean-function-glyphs
-	'("ab" . "yss")
-	'("de" . "ep")
-	'("ro" . "ck")
-	'("se" . "abed")
-	"surface")
-      . 'uiua-ocean-function)
      (,(uiua--generate-font-lock-matcher
 	uiua--dyadic-function-glyphs
 	"equals" "add"
