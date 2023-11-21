@@ -47,10 +47,6 @@
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for Uiua in-built dyadic functions.")
 
-(defface uiua-ocean-function
-  '((t (:inherit font-lock-keyword-face)))
-  "Face used for Uiua ocean functions.")
-
 (defface uiua-monadic-modifier
   '((t (:inherit font-lock-type-face)))
   "Face used for Uiua in-built monadic modifiers.")
@@ -140,7 +136,6 @@ If GLYPHS is nil, only the latter behaviour is displayed."
    (list ?. ?, ?: ?\; ?∘ ?⸮)
    uiua--monadic-function-glyphs
    uiua--dyadic-function-glyphs
-   uiua--ocean-function-glyphs
    uiua--monadic-modifier-glyphs
    uiua--dyadic-modifier-glyphs
    uiua--noadic-glyphs))
