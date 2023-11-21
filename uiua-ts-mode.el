@@ -3,7 +3,8 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
 ;; Keywords: languages, uiua
-;; Package-Requires: ((emacs "29.1") (uiua-mode "0.1"))
+;; Package-Requires: ((emacs "29.1") (uiua-mode "0.0.5"))
+;; Version: 0.0.5
 
 ;;; Commentary:
 ;; A major mode for Uiua that uses treesitter for parsing
