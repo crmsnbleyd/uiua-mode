@@ -48,5 +48,4 @@ jobs:
     - name: Install uiua-ts-mode locally
       if: ${{ matrix.ts }}
       run: emacs -Q -l .github/workflows/init.el -batch
-                    -f package-lint-batch-and-exit
-                    uiua-ts-mode.el
+                    --eval '(package-install-file "uiua-ts-mode.el")'
