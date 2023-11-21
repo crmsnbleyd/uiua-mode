@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - emacs: 27.1
+            ts: false
+            lint: false
+          - emacs: 29.1
+            ts: true
+            lint: true
+          - emacs: snapshot
+            ts: true
+            lint: true
+    steps:
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs }}
+    - uses: actions/checkout@v2
+
+    - name: Install package-lint
+      run: emacs -Q -l .github/workflows/init.el -batch
+                    --eval "(package-install 'package-lint)"
+
+    - name: Lint uiua-mode
+      run: emacs -Q -l .github/workflows/init.el -batch
+                    -f package-lint-batch-and-exit
+                    uiua-mode.el
+
+    - name: Install uiua-mode locally
+      # We do this before linting uiua-ts-mode, so package-lint knows about it
+      run: emacs -Q -l .github/workflows/init.el -batch
+                    --eval '(package-install-file "uiua-mode.el")'
+
+    - name: Lint uiua-ts-mode
+      if: ${{ matrix.lint }}
+      run: emacs -Q -l .github/workflows/init.el -batch
+                    -f package-lint-batch-and-exit
+                    uiua-ts-mode.el
+
+    - name: Install uiua-ts-mode locally
+      if: ${{ matrix.ts }}
+      run: emacs -Q -l .github/workflows/init.el -batch
+                    --eval '(package-install-file "uiua-ts-mode.el")'

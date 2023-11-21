@@ -1,10 +1,10 @@
 ;;; uiua-mode.el --- Uiua integration -*- lexical-binding:t -*-
-;;; Version: 0.0.5
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
 ;; Package-Requires: ((emacs "27.1") (reformatter "0.7"))
 ;; Keywords: languages, uiua
+;; Version: 0.0.5
 
 ;;; Commentary:
 ;; `uiua-mode' is a major mode for interacting with
