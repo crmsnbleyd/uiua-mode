@@ -1,6 +1,9 @@
 [[https://github.com/crmsnbleyd/uiua-mode/blob/main/LICENSE][file:https://img.shields.io/badge/license-GPL_3-green.svg]]
 [[https://melpa.org/#/uiua-mode][file:https://melpa.org/packages/uiua-mode-badge.svg]]
 [[https://github.com/crmsnbleyd/uiua-mode/actions/workflows/ci.yml][file:https://github.com/crmsnbleyd/uiua-mode/actions/workflows/ci.yml/badge.svg]]
+
+* uiua-mode
+
 This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language
 
 Much like the language itself, this mode is currently in progress.
