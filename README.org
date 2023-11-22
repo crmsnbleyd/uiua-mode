@@ -4,9 +4,13 @@
 
 * uiua-mode
 
-This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language
+This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language.
 
-Much like the language itself, this mode is currently in progress.
+Since the language's semantics and syntax are still
+very much in flux, the mode will change as well.
+
+Please report any divergence from the major/minor releases of uiua
+as Github issues. They are considered bugs.
 
 ** Setup
 
@@ -16,16 +20,10 @@ Otherwise, to use this conventional major mode:
 #+begin_src emacs-lisp
   (use-package uiua-mode
     :mode "\\.ua\\'"
-    :straight
-    (uiua-mode
-     :type git :host github
-     :repo "crmsnbleyd/uiua-mode"))
+    :ensure t)  ; or :straight t if using straight.el
 #+end_src
 
 ** Screenshots
 Syntax highlighting of various uiua elements, in [[https://github.com/crmsnbleyd/flexoki-emacs-theme][flexoki-theme]].
 #+caption: Showing various glyphs with syntax highlighting
 [[https://github.com/crmsnbleyd/uiua-mode/blob/main/assets/uiua-example.png]]
-
-** Contributors
-~uiua-ts-mode~ currently uses a grammar by [[https://github.com/shnarazk/tree-sitter-uiua][@shnarazk]].
