@@ -14,6 +14,7 @@
 (require 'face-remap)
 (require 'seq)
 (require 'reformatter)
+(require 'regexp-opt)
 (eval-when-compile (require 'rx))
 
 (defgroup uiua nil
