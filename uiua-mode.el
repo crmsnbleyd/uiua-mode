@@ -2,7 +2,7 @@
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
-;; Package-Requires: ((emacs "27.1") (reformatter "0.7"))
+;; Package-Requires: ((emacs "27.1") (reformatter "0.8"))
 ;; Keywords: languages, uiua
 ;; Version: 0.0.5
 
@@ -263,7 +263,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :args (list "fmt")
   :stdin nil
   :stdout nil
-  :input-file (reformatter-temp-file-in-current-directory)
+  :input-file (reformatter-temp-file)
   :lighter " UiuaFmt")
 
 ;;;###autoload
