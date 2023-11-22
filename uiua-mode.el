@@ -2,7 +2,7 @@
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
-;; Package-Requires: ((emacs "27.1") (reformatter "0.7"))
+;; Package-Requires: ((emacs "27.1") (reformatter "0.8"))
 ;; Keywords: languages, uiua
 ;; Version: 0.0.5
 
@@ -22,14 +22,9 @@
   :prefix "uiua-"
   :group 'languages)
 
-(defcustom uiua-mode-hook nil
-  "The hook that is called after loading `uiua-mode'."
-  :type 'hook)
-
 (defcustom uiua-command
   "uiua"
   "Default command to use Uiua."
-  :version "27.1"
   :type 'string)
 
 (defface uiua-number
@@ -263,7 +258,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :args (list "fmt")
   :stdin nil
   :stdout nil
-  :input-file (reformatter-temp-file-in-current-directory)
+  :input-file (reformatter-temp-file)
   :lighter " UiuaFmt")
 
 ;;;###autoload
