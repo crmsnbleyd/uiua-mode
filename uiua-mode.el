@@ -258,7 +258,7 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :args (list "fmt")
   :stdin nil
   :stdout nil
-  :input-file (reformatter-temp-file)
+  :input-file (reformatter--make-temp-file 'uiua)
   :lighter " UiuaFmt")
 
 ;;;###autoload
