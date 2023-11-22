@@ -22,14 +22,9 @@
   :prefix "uiua-"
   :group 'languages)
 
-(defcustom uiua-mode-hook nil
-  "The hook that is called after loading `uiua-mode'."
-  :type 'hook)
-
 (defcustom uiua-command
   "uiua"
   "Default command to use Uiua."
-  :version "27.1"
   :type 'string)
 
 (defface uiua-number
