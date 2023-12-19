@@ -28,27 +28,27 @@
   :type 'string)
 
 (defface uiua-number
-  '((t (:inherit font-lock-function-name-face)))
+  '((t (:inherit font-lock-number-face)))
   "Face used for numbers in Uiua.")
 
 (defface uiua-noadic-or-constant
-  '((t (:inherit font-lock-preprocessor-face)))
+  '((t (:inherit font-lock-constant-face)))
   "Face used for noadic functions and builtin contants.")
 
 (defface uiua-monadic-function
-  '((t (:inherit font-lock-builtin-face)))
+  '((t (:inherit font-lock-function-name-face)))
   "Face used for Uiua in-built monadic functions.")
 
 (defface uiua-dyadic-function
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit font-lock-type-face)))
   "Face used for Uiua in-built dyadic functions.")
 
 (defface uiua-monadic-modifier
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit font-lock-preprocessor-face)))
   "Face used for Uiua in-built monadic modifiers.")
 
 (defface uiua-dyadic-modifier
-  '((t (:inherit font-lock-constant-face)))
+  '((t (:inherit font-lock-keyword-face)))
   "Face used for Uiua in-built dyadic modifiers.")
 
 (defvar uiua--*last-compiled-file* nil
