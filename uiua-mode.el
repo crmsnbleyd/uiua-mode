@@ -255,8 +255,8 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 ;;;###autoload (autoload 'uiua-format-on-save-mode "uiua-mode" nil t)
 (reformatter-define uiua-format
   :program uiua-command
-  :args (list "fmt" "--to-stdout" input-file)
-  :stdin nil
+  :args (list "fmt" "--io")
+  :stdin t
   :stdout t
   :input-file (reformatter-temp-file)
   :lighter " UiuaFmt")
