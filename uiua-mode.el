@@ -4,7 +4,7 @@
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
 ;; Package-Requires: ((emacs "27.1") (reformatter "0.8"))
 ;; Keywords: languages, uiua
-;; Version: 0.0.5
+;; Version: 0.1.0
 
 ;;; Commentary:
 ;; `uiua-mode' is a major mode for interacting with
