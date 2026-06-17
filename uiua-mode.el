@@ -4,11 +4,11 @@
 ;; URL: https://github.com/crmsnbleyd/uiua-mode
 ;; Package-Requires: ((emacs "27.1") (reformatter "0.8"))
 ;; Keywords: languages, uiua
-;; Version: 0.1.0
+;; Version: 0.2.0
 
 ;;; Commentary:
 ;; `uiua-mode' is a major mode for interacting with
-;; and editing the uiua array language
+;; and editing the uiua array language.
 
 ;;; Code:
 (require 'face-remap)
@@ -25,7 +25,8 @@
 (defcustom uiua-command
   "uiua"
   "Default command to use Uiua."
-  :type 'string)
+  :type 'string
+  :group 'uiua)
 
 (defface uiua-number
   '((t (:inherit font-lock-number-face)))
@@ -54,6 +55,8 @@
 (defvar uiua--*last-compiled-file* nil
   "Last compiled output of `uiua-standalone-compile'.")
 
+;;; ── Interactive commands ────────────────────────────────────────────────────
+
 (defun uiua-standalone-compile (arg)
   "Compile standalone executable with uiua stand.
 If ARG is nil, prompts user for input and output names."
@@ -72,6 +75,20 @@ If ARG is nil, prompts user for input and output names."
 		      nil nil executable-name)))
   (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))
   (setf uiua--*last-compiled-file* executable-name)))
+
+(defun uiua-run-buffer ()
+  "Save the current buffer and run it with `uiua run'.
+Uses the Emacs compilation framework so errors are navigable.
+Signals a `user-error' if the buffer is not visiting a file."
+  (interactive)
+  (unless (buffer-file-name)
+    (user-error "Buffer is not visiting a file; save it first"))
+  (save-buffer)
+  (compile (format "%s run %s"
+                   uiua-command
+                   (shell-quote-argument (buffer-file-name)))))
+
+;;; ── Font-lock helpers ───────────────────────────────────────────────────────
 
 ;; Possible enhancement: macro to generate an `rx' form
 (defun uiua--generate-keywords (prefix other-letters)
@@ -251,6 +268,8 @@ If GLYPHS is nil, only the latter behaviour is displayed."
     table)
   "Syntax table for `uiua-mode'.")
 
+;;; ── Formatter ───────────────────────────────────────────────────────────────
+
 ;;;###autoload (autoload 'uiua-format-buffer "uiua-mode" nil t)
 ;;;###autoload (autoload 'uiua-format-on-save-mode "uiua-mode" nil t)
 (reformatter-define uiua-format
@@ -260,6 +279,17 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :stdout t
   :input-file (reformatter-temp-file)
   :lighter " UiuaFmt")
+
+;;; ── Keymap ──────────────────────────────────────────────────────────────────
+
+(defvar uiua-base-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") #'uiua-run-buffer)
+    (define-key map (kbd "C-c C-k") #'uiua-standalone-compile)
+    map)
+  "Keymap for `uiua-base-mode', inherited by `uiua-mode' and `uiua-ts-mode'.")
+
+;;; ── Mode definitions ────────────────────────────────────────────────────────
 
 ;;;###autoload
 (define-derived-mode uiua-base-mode prog-mode "Uiua"
@@ -278,6 +308,26 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ua\\'" . uiua-mode))
+
+;;; ── LSP integration ─────────────────────────────────────────────────────────
+
+;; Eglot: register `uiua lsp' for both major modes.
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((uiua-mode uiua-ts-mode) . ("uiua" "lsp"))))
+
+;; lsp-mode: register a client and enable auto-start on mode hooks.
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(uiua-mode    . "uiua"))
+  (add-to-list 'lsp-language-id-configuration '(uiua-ts-mode . "uiua"))
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection (lambda () (list uiua-command "lsp")))
+    :activation-fn  (lsp-activate-on "uiua")
+    :server-id      'uiua-lsp
+    :major-modes    '(uiua-mode uiua-ts-mode)))
+  (dolist (hook '(uiua-mode-hook uiua-ts-mode-hook))
+    (add-hook hook #'lsp-deferred)))
 
 (provide 'uiua-mode)
 
