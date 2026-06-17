@@ -309,26 +309,6 @@ If GLYPHS is nil, only the latter behaviour is displayed."
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ua\\'" . uiua-mode))
 
-;;; ── LSP integration ─────────────────────────────────────────────────────────
-
-;; Eglot: register `uiua lsp' for both major modes.
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((uiua-mode uiua-ts-mode) . ("uiua" "lsp"))))
-
-;; lsp-mode: register a client and enable auto-start on mode hooks.
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration '(uiua-mode    . "uiua"))
-  (add-to-list 'lsp-language-id-configuration '(uiua-ts-mode . "uiua"))
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection (lambda () (list uiua-command "lsp")))
-    :activation-fn  (lsp-activate-on "uiua")
-    :server-id      'uiua-lsp
-    :major-modes    '(uiua-mode uiua-ts-mode)))
-  (dolist (hook '(uiua-mode-hook uiua-ts-mode-hook))
-    (add-hook hook #'lsp-deferred)))
-
 (provide 'uiua-mode)
 
 ;;; uiua-mode.el ends here

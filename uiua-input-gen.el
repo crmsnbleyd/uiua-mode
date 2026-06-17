@@ -100,11 +100,13 @@ so that end users get the input method without a network call."
 \\\\absolute-value \\to ⌵\"\n")
       (insert " nil t nil nil nil nil nil nil nil nil t)\n\n")
       (insert "(quail-define-rules\n")
-      (dolist (pair pairs)
-        ;; \"\\\\NAME\" in the source = the key string \NAME that the user types.
-        ;; ?GLYPH is a character literal, matching Emacs built-in Quail style.
-        (insert (format " (\"\\\\%s\" ?%s)\n" (car pair) (cdr pair))))
-      (insert ")\n\n")
+      ;; \"\\\\NAME\" in the source = the key string \NAME that the user types.
+      ;; ?GLYPH is a character literal, matching Emacs built-in Quail style.
+      ;; The closing ) goes on the last rule line (package-lint requirement).
+      (let ((last (car (last pairs))))
+        (dolist (pair (butlast pairs))
+          (insert (format " (\"\\\\%s\" ?%s)\n" (car pair) (cdr pair))))
+        (insert (format " (\"\\\\%s\" ?%s))\n\n" (car last) (cdr last))))
       (insert "(provide 'uiua-input)\n")
       (insert ";;; uiua-input.el ends here\n"))
     (message "Wrote %d rules to %s" (length pairs) uiua-input-gen--output-file)))

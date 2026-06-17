@@ -4,26 +4,87 @@
 
 * uiua-mode
 
-This is an emacs mode for [[https://www.uiua.org][Uiua]], an array language.
+An Emacs major mode for [[https://www.uiua.org][Uiua]], an array programming language.
 
-Since the language's semantics and syntax are still
-very much in flux, the mode will change as well.
+Since the language's semantics and syntax are still very much in flux,
+the mode will change as well.  Please report any divergence from the
+major/minor releases of Uiua as GitHub issues — they are considered bugs.
 
-Please report any divergence from the major/minor releases of uiua
-as Github issues. They are considered bugs.
+** Features
+
+- Syntax highlighting for all Uiua primitives, glyphs, numbers, and strings
+- Auto-formatting on save via ~uiua fmt~ (powered by [[https://github.com/purcell/reformatter.el][reformatter]])
+- Run the current buffer with ~C-c C-c~ (~uiua run~, output in ~*compilation*~)
+- Standalone compilation with ~C-c C-k~ (~uiua stand~)
+- LSP support via Eglot or lsp-mode (see [[*LSP setup]] below)
+- Quail input method for inserting Unicode glyphs by name (see [[*Input method]])
 
 ** Setup
 
-Users with an Emacs that supports treesitter should prefer [[https://github.com/crmsnbleyd/uiua-ts-mode][uiua-ts-mode]].
+Users with Emacs 29+ and tree-sitter support should prefer [[https://github.com/crmsnbleyd/uiua-ts-mode][uiua-ts-mode]].
 
-Otherwise, to use this conventional major mode:
+Otherwise, install from MELPA:
 #+begin_src emacs-lisp
   (use-package uiua-mode
     :mode "\\.ua\\'"
     :ensure t)  ; or :straight t if using straight.el
 #+end_src
 
+** LSP setup
+
+Uiua ships a built-in language server (~uiua lsp~).  Configure it once
+in your init file — no changes to the package are needed.
+
+*** Eglot (built-in, Emacs 29+)
+#+begin_src emacs-lisp
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((uiua-mode uiua-ts-mode) . ("uiua" "lsp"))))
+  (add-hook 'uiua-mode-hook #'eglot-ensure)
+#+end_src
+
+*** lsp-mode
+#+begin_src emacs-lisp
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(uiua-mode    . "uiua"))
+    (add-to-list 'lsp-language-id-configuration '(uiua-ts-mode . "uiua"))
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection '("uiua" "lsp"))
+      :activation-fn  (lsp-activate-on "uiua")
+      :server-id      'uiua-lsp
+      :major-modes    '(uiua-mode uiua-ts-mode))))
+  (add-hook 'uiua-mode-hook #'lsp-deferred)
+#+end_src
+
+** Input method
+
+~uiua-input.el~ provides a Quail input method for inserting Unicode glyphs
+by their ASCII names.  Load it and activate it:
+
+#+begin_src emacs-lisp
+  (require 'uiua-input)                    ; or (load "path/to/uiua-input.el")
+  (add-hook 'uiua-mode-hook
+            (lambda () (set-input-method "uiua")))
+#+end_src
+
+Then type ~\NAME~ to insert the corresponding glyph.  Multi-word names use
+hyphens:
+
+| Typed sequence      | Inserted glyph |
+|---------------------+----------------|
+| ~\not~              | ~¬~            |
+| ~\fork~             | ~⊃~            |
+| ~\reduce~           | ~/~            |
+| ~\absolute-value~   | ~⌵~            |
+| ~\inner-product~    | ~⨰~            |
+
+To regenerate ~uiua-input.el~ after a Uiua release:
+#+begin_src sh
+  emacs --batch --script uiua-input-gen.el
+#+end_src
+
 ** Screenshots
-Syntax highlighting of various uiua elements, in [[https://github.com/crmsnbleyd/flexoki-emacs-theme][flexoki-theme]].
+Syntax highlighting of various Uiua elements, in [[https://github.com/crmsnbleyd/flexoki-emacs-theme][flexoki-theme]].
 #+caption: Showing various glyphs with syntax highlighting
 [[https://github.com/crmsnbleyd/uiua-mode/blob/main/assets/uiua-example.png]]

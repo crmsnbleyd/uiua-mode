@@ -129,8 +129,7 @@ Examples:  \\not \to ¬   \\fork \to ⊃   \\absolute-value \to ⌵"
  ("\\validate" ?⯾)
  ("\\where" ?⊚)
  ("\\windows" ?◫)
- ("\\with" ?⤙)
-)
+ ("\\with" ?⤙))
 
 (provide 'uiua-input)
 ;;; uiua-input.el ends here
