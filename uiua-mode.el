@@ -11,6 +11,8 @@
 ;; and editing the uiua array language.
 
 ;;; Code:
+(require 'ansi-color)
+(require 'compile)
 (require 'face-remap)
 (require 'seq)
 (require 'reformatter)
@@ -76,17 +78,28 @@ If ARG is nil, prompts user for input and output names."
   (compile (format "%s stand --name %s %s" uiua-command executable-name input-file-name))
   (setf uiua--*last-compiled-file* executable-name)))
 
+(define-compilation-mode uiua-run-mode "Uiua"
+  "Compilation mode for `uiua run' output with ANSI color rendering."
+  (add-hook 'compilation-filter-hook
+            (if (fboundp 'ansi-color-compilation-filter)
+                #'ansi-color-compilation-filter
+              (lambda ()
+                (ansi-color-apply-on-region
+                 compilation-filter-start (point-max))))
+            nil t))
+
 (defun uiua-run-buffer ()
   "Save the current buffer and run it with `uiua run'.
-Uses the Emacs compilation framework so errors are navigable.
+Output appears in a `uiua-run-mode' buffer with ANSI colors rendered.
 Signals a `user-error' if the buffer is not visiting a file."
   (interactive)
   (unless (buffer-file-name)
     (user-error "Buffer is not visiting a file; save it first"))
   (save-buffer)
-  (compile (format "%s run %s"
-                   uiua-command
-                   (shell-quote-argument (buffer-file-name)))))
+  (compilation-start (format "%s run %s"
+                             uiua-command
+                             (shell-quote-argument (buffer-file-name)))
+                     'uiua-run-mode))
 
 ;;; ── Font-lock helpers ───────────────────────────────────────────────────────
 
