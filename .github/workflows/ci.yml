@@ -20,7 +20,7 @@ jobs:
     - uses: purcell/setup-emacs@master
       with:
         version: ${{ matrix.emacs }}
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install dependencies
       run: emacs -Q -l .github/workflows/init.el -batch
