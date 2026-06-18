@@ -293,6 +293,46 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   :input-file (reformatter-temp-file)
   :lighter " UiuaFmt")
 
+;;; ── Completion ──────────────────────────────────────────────────────────────
+
+(defun uiua-completion-at-point ()
+  "Completion-at-point for Uiua glyph names.
+When point follows a \\\\NAME prefix, offer completions from
+`uiua--name-glyph-alist' (defined in uiua-input.el).  Selecting a
+candidate replaces the entire \\\\NAME sequence with the glyph."
+  (require 'uiua-input nil t)
+  (when (and (boundp 'uiua--name-glyph-alist)
+             (save-excursion
+               (re-search-backward "\\\\[a-z][a-z-]*\\="
+                                   (line-beginning-position) t)))
+    (let* ((end (point))
+           (start (1+ (match-beginning 0)))  ; position after the backslash
+           (table uiua--name-glyph-alist))
+      (list start end
+            (mapcar #'car table)
+            :annotation-function
+            (lambda (name)
+              (when-let ((glyph (cdr (assoc name table))))
+                (concat "  " glyph)))
+            :exit-function
+            (lambda (name status)
+              (when (eq status 'finished)
+                (when-let ((glyph (cdr (assoc name table))))
+                  ;; At this point the completed name has been inserted.
+                  ;; Delete backslash + name and insert the glyph.
+                  (delete-region (- (point) (length name) 1) (point))
+                  (insert glyph))))
+            :exclusive 'no))))
+
+(defun uiua--capf-activate ()
+  "Add `uiua-completion-at-point' when the uiua input method is activated."
+  (when (equal current-input-method "uiua")
+    (add-hook 'completion-at-point-functions #'uiua-completion-at-point nil t)))
+
+(defun uiua--capf-deactivate ()
+  "Remove `uiua-completion-at-point' when the uiua input method is deactivated."
+  (remove-hook 'completion-at-point-functions #'uiua-completion-at-point t))
+
 ;;; ── Keymap ──────────────────────────────────────────────────────────────────
 
 (defvar uiua-base-mode-map
@@ -309,7 +349,9 @@ If GLYPHS is nil, only the latter behaviour is displayed."
   "Generic Major mode for editing Uiua files."
   :syntax-table uiua--syntax-table
   (setq-local comment-start "#")
-  (setq-local comment-start-skip "#+\\s-*"))
+  (setq-local comment-start-skip "#+\\s-*")
+  (add-hook 'input-method-activate-hook #'uiua--capf-activate nil t)
+  (add-hook 'input-method-deactivate-hook #'uiua--capf-deactivate nil t))
 
 (add-hook 'uiua-base-mode-hook 'uiua-format-on-save-mode)
 

@@ -107,6 +107,13 @@ so that end users get the input method without a network call."
         (dolist (pair (butlast pairs))
           (insert (format " (\"\\\\%s\" ?%s)\n" (car pair) (cdr pair))))
         (insert (format " (\"\\\\%s\" ?%s))\n\n" (car last) (cdr last))))
+      ;; Plain alist for completion backends (e.g. corfu via capf).
+      (insert "(defconst uiua--name-glyph-alist\n  '(\n")
+      (let ((last (car (last pairs))))
+        (dolist (pair (butlast pairs))
+          (insert (format "   (%S . %S)\n" (car pair) (cdr pair))))
+        (insert (format "   (%S . %S))\n" (car last) (cdr last))))
+      (insert "  \"Alist mapping Uiua primitive names to their Unicode glyphs.\")\n\n")
       (insert "(provide 'uiua-input)\n")
       (insert ";;; uiua-input.el ends here\n"))
     (message "Wrote %d rules to %s" (length pairs) uiua-input-gen--output-file)))
